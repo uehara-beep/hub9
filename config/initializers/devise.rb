@@ -1,3 +1,6 @@
+# Skip during assets:precompile on Railway
+return if ENV["RAILS_SKIP_DEV_INIT"] == "1"
+
 # frozen_string_literal: true
 
 # Assuming you have not yet modified this file, each configuration option below
