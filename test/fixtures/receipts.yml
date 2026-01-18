@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  visibility: 1
+  bucket: 1
+  note: MyString
+  ocr_raw_text: MyText
+  extracted_data: 
+
+two:
+  user: two
+  visibility: 1
+  bucket: 1
+  note: MyString
+  ocr_raw_text: MyText
+  extracted_data: 
