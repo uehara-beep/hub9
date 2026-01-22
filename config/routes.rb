@@ -1,12 +1,10 @@
-# Railway build / assets:precompile 対策
-if ENV["SECRET_KEY_BASE_DUMMY"] == "1"
-  Rails.application.routes.draw do
-    root "home#index"
-  end
-  return
-end
-
 Rails.application.routes.draw do
-  devise_for :users
+  namespace :api do
+    get "health", to: "health#index"
+    post "chat", to: "chat#create"
+  end
+  unless ENV["SECRET_KEY_BASE_DUMMY"]
+    devise_for :users
+  end
   root "home#index"
 end
