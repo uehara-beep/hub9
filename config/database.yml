@@ -85,20 +85,6 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
-    <<: *default
-    database: hub9_production
-    username: hub9
-    password: <%= ENV["HUB9_DATABASE_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: hub9_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: hub9_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: hub9_production_cable
-    migrations_paths: db/cable_migrate
+  primary:
+    adapter: postgresql
+    url: <%= ENV["DATABASE_URL"] %>

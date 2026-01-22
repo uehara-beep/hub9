@@ -23,5 +23,14 @@ module Hub9
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Railway build: skip migration errors during assets:precompile
+    if ENV["ASSETS_PRECOMPILE"] || ENV["RAILS_ENV"] == "production"
+      config.active_record.migration_error = false
+      config.active_record.dump_schema_after_migration = false
+    end
+    if ENV["RAILS_ENV"] == "production"
+      config.active_record.maintain_test_schema = false
+    end
   end
 end
