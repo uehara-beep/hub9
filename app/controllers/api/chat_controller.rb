@@ -7,7 +7,20 @@ class Api::ChatController < ApplicationController
       role: "user"
     )
 
-    reply_text = "HUB9は受け取りました：「#{user_message.content}」"
+    client = OpenAI::Client.new(access_token: ENV["OPENAI_API_KEY"])
+
+    history = Message.order(:created_at).last(10).map do |m|
+      { role: m.role, content: m.content }
+    end
+
+    response = client.chat(
+      parameters: {
+        model: "gpt-4.1-mini",
+        messages: history
+      }
+    )
+
+    reply_text = response.dig("choices", 0, "message", "content")
 
     Message.create!(
       content: reply_text,
