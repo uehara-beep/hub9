@@ -1,215 +1,155 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
-    <title>HUB9 Chat</title>
+    <title>HUB9</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        background: #f5f5f0;
-        padding: 20px;
-        margin: 0;
+      :root{
+        --bg:#0b0f17; --card:#0f1624; --line:#1f2a3a; --text:#e7eefc; --muted:#9fb0cc;
+        --accent:#7aa2ff; --accent2:#7affc8;
       }
-      .chat-box {
-        max-width: 600px;
-        margin: auto;
-        background: white;
-        padding: 16px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      html,body{height:100%}
+      body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system; background:var(--bg); color:var(--text);}
+      .topbar{
+        position:sticky; top:0; z-index:10;
+        background:rgba(11,15,23,.92); backdrop-filter: blur(10px);
+        border-bottom:1px solid var(--line);
+        padding:12px 14px;
+        display:flex; gap:10px; align-items:center; justify-content:space-between;
       }
-      #secretary-bar {
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        display: flex;
-        gap: 12px;
-        padding: 12px 16px;
-        background: rgba(255,255,255,0.85);
-        backdrop-filter: blur(8px);
-        border-radius: 8px;
-        margin-bottom: 16px;
+      .brand{font-weight:700; letter-spacing:.08em}
+      .chips{display:flex; gap:8px; flex-wrap:wrap}
+      .chip{
+        border:1px solid var(--line); background:var(--card); color:var(--text);
+        padding:8px 10px; border-radius:999px; font-size:12px; cursor:pointer;
+        transition:transform .12s ease, border-color .12s ease;
       }
-      .sec-btn {
-        padding: 10px 20px;
-        border-radius: 999px;
-        border: none;
-        font-weight: 600;
-        cursor: pointer;
-        background: #f3f4f6;
-        transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      .chip:hover{transform:translateY(-1px); border-color:rgba(122,162,255,.55)}
+      .chip.active{border-color:rgba(122,162,255,.9)}
+      .wrap{max-width:920px; margin:0 auto; padding:16px 14px 92px;}
+      .msg{padding:14px 14px; border:1px solid var(--line); background:var(--card); border-radius:16px; margin:10px 0; line-height:1.6}
+      .msg.user{border-color:rgba(122,255,200,.35)}
+      .msg.bot{border-color:rgba(122,162,255,.35)}
+      .meta{font-size:12px;color:var(--muted); margin-bottom:6px}
+      .inputbar{
+        position:fixed; left:0; right:0; bottom:0;
+        background:rgba(11,15,23,.92); backdrop-filter: blur(10px);
+        border-top:1px solid var(--line);
+        padding:12px 14px;
       }
-      .sec-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      .inputwrap{max-width:920px; margin:0 auto; display:flex; gap:10px}
+      textarea{
+        flex:1; resize:none; height:54px; padding:12px 12px;
+        border-radius:14px; border:1px solid var(--line);
+        background:#0c1320; color:var(--text); outline:none;
       }
-      .sec-btn:active {
-        transform: scale(0.96);
+      button{
+        width:110px; border-radius:14px; border:1px solid rgba(122,162,255,.55);
+        background:linear-gradient(180deg, rgba(122,162,255,.20), rgba(122,162,255,.08));
+        color:var(--text); cursor:pointer; font-weight:700;
+        transition:transform .12s ease;
       }
-      .sec-btn.done {
-        opacity: 0.6;
-        pointer-events: none;
-      }
-      input[type="text"] {
-        width: 100%;
-        padding: 12px;
-        margin-top: 12px;
-        box-sizing: border-box;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-      }
-      .submit-btn {
-        margin-top: 8px;
-        padding: 10px 20px;
-        background: #3b82f6;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-      }
-      .submit-btn:hover {
-        background: #2563eb;
-      }
-      #chat {
-        margin-top: 16px;
-        min-height: 100px;
-      }
-      .card {
-        padding: 16px;
-        background: #f9fafb;
-        border-radius: 12px;
-        margin-bottom: 12px;
-        border: 1px solid #e5e7eb;
-        animation: fadeUp 0.4s ease-out;
-      }
-      .card.user {
-        background: #e0f2fe;
-        border-color: #bae6fd;
-      }
-      .card .name {
-        font-weight: 600;
-        font-size: 12px;
-        color: #6b7280;
-        margin-bottom: 8px;
-      }
-      .card .content {
-        white-space: pre-wrap;
-        line-height: 1.6;
-      }
-      .card .content .highlight {
-        color: #dc2626;
-        font-weight: 600;
-      }
-      .card .content .muted {
-        color: #9ca3af;
-      }
-      @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(6px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-      #typing {
-        padding: 12px;
-        color: #6b7280;
-        font-style: italic;
-        animation: fadeUp 0.3s ease-out;
-      }
-      .briefing-header {
-        font-size: 14px;
-        font-weight: 700;
-        color: #1f2937;
-        border-bottom: 2px solid #e5e7eb;
-        padding-bottom: 8px;
-        margin-bottom: 12px;
-      }
+      button:hover{transform:translateY(-1px)}
+      .row2{margin-top:10px; display:flex; gap:8px; flex-wrap:wrap}
+      .small{font-size:12px; color:var(--muted)}
     </style>
   </head>
-
   <body>
-    <div class="chat-box">
-      <h1>HUB9 Chat</h1>
-
-      <div id="secretary-bar">
-        <button class="sec-btn morning" onclick="sendQuick('/朝', 'morning')">🌅 朝の秘書</button>
-        <button class="sec-btn night" onclick="sendQuick('/夜', 'night')">🌙 夜の秘書</button>
+    <div class="topbar">
+      <div>
+        <div class="brand">HUB9</div>
+        <div class="small">Ta9 専用秘書（外でも使える）</div>
       </div>
+      <div class="chips" id="modeChips">
+        <div class="chip active" data-mode="default">秘書</div>
+        <div class="chip" data-mode="minutes">議事録</div>
+        <div class="chip" data-mode="progress">進捗</div>
+        <div class="chip" data-mode="morning">朝</div>
+        <div class="chip" data-mode="night">夜</div>
+      </div>
+    </div>
 
-      <form id="chat-form">
-        <input type="text" id="message" placeholder="入力…" />
-        <button type="submit" class="submit-btn">送信</button>
-      </form>
+    <div class="wrap" id="chat"></div>
 
-      <div id="chat"></div>
+    <div class="inputbar">
+      <div class="inputwrap">
+        <textarea id="input" placeholder="例: /整理して 今日やることが散らかってる…  など"></textarea>
+        <button id="send">送信</button>
+      </div>
+      <div class="wrap" style="padding:10px 0 0;">
+        <div class="row2">
+          <div class="chip" id="btnMorning">☀️ 朝ブリーフ</div>
+          <div class="chip" id="btnNight">🌙 夜レビュー</div>
+          <div class="chip" id="btnSort">🧹 /整理して</div>
+          <div class="chip" id="btnDecide">🧠 /判断して</div>
+        </div>
+      </div>
     </div>
 
     <script>
-    function showTyping(name) {
-      const el = document.createElement("div");
-      el.id = "typing";
-      el.innerText = `${name} が確認しています…`;
-      document.querySelector("#chat").appendChild(el);
-    }
+      const chat = document.getElementById("chat");
+      const input = document.getElementById("input");
+      const send = document.getElementById("send");
+      const chips = document.getElementById("modeChips");
+      let mode = "default";
 
-    function hideTyping() {
-      const el = document.getElementById("typing");
-      if (el) el.remove();
-    }
-
-    function appendCard(name, text, isUser = false, type = null) {
-      const el = document.createElement("div");
-      el.className = "card" + (isUser ? " user" : "");
-
-      let header = "";
-      if (type === "morning") {
-        header = '<div class="briefing-header">🌅 朝の秘書ブリーフ</div>';
-      } else if (type === "night") {
-        header = '<div class="briefing-header">🌙 夜の秘書レビュー</div>';
+      function addMsg(role, text, meta=""){
+        const div = document.createElement("div");
+        div.className = "msg " + (role === "user" ? "user" : "bot");
+        div.innerHTML = (meta ? `<div class="meta">${meta}</div>` : "") + `<div>${escapeHtml(text).replace(/\n/g,"<br>")}</div>`;
+        chat.appendChild(div);
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      }
+      function escapeHtml(s){
+        return (s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
       }
 
-      el.innerHTML = `<div class="name">${name}</div>${header}<div class="content">${text}</div>`;
-      document.querySelector("#chat").appendChild(el);
-    }
-
-    function markAutoRun(type) {
-      const el = document.querySelector(`.sec-btn.${type}`);
-      if (el) el.classList.add("done");
-    }
-
-    function sendQuick(command, type) {
-      showTyping("HUB9");
-
-      fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: command })
-      })
-      .then(res => res.json())
-      .then(data => {
-        hideTyping();
-        appendCard("HUB9", data.reply, false, type);
-        markAutoRun(type);
-      });
-    }
-
-    document.getElementById("chat-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const msg = document.getElementById("message").value;
-      if (!msg.trim()) return;
-
-      appendCard("あなた", msg, true);
-      document.getElementById("message").value = "";
-      showTyping("HUB9");
-
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg })
+      chips.addEventListener("click", (e) => {
+        const chip = e.target.closest(".chip");
+        if(!chip) return;
+        document.querySelectorAll("#modeChips .chip").forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        mode = chip.dataset.mode;
+        addMsg("bot", `モード変更：${chip.textContent}`, "system");
       });
 
-      const data = await res.json();
-      hideTyping();
-      appendCard("HUB9", data.reply);
-    });
+      async function postChat(message){
+        addMsg("user", message, "you");
+        const res = await fetch("/api/chat", {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ message, mode })
+        });
+        const data = await res.json().catch(()=> ({}));
+        if(!res.ok){
+          addMsg("bot", `エラー: ${data.error || res.status}`, "error");
+          return;
+        }
+        addMsg("bot", data.reply || "", "assistant");
+      }
+
+      send.addEventListener("click", async () => {
+        const msg = input.value.trim();
+        if(!msg) return;
+        input.value = "";
+        await postChat(msg);
+      });
+
+      input.addEventListener("keydown", async (e) => {
+        if(e.key === "Enter" && !e.shiftKey){
+          e.preventDefault();
+          send.click();
+        }
+      });
+
+      // one-click buttons
+      document.getElementById("btnMorning").onclick = () => postChat("/朝");
+      document.getElementById("btnNight").onclick = () => postChat("/夜");
+      document.getElementById("btnSort").onclick = () => { input.value = "/整理して "; input.focus(); };
+      document.getElementById("btnDecide").onclick = () => { input.value = "/判断して "; input.focus(); };
+
+      // first message
+      addMsg("bot", "起動OK。『/整理して』か『朝ブリーフ』から入るのがおすすめ。", "assistant");
     </script>
   </body>
 </html>
