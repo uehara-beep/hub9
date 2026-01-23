@@ -49,6 +49,8 @@ class Api::ChatController < ApplicationController
         :progress
       elsif params[:message].start_with?("/朝")
         :morning
+      elsif params[:message].start_with?("/夜")
+        :night
       else
         :normal
       end
@@ -81,6 +83,8 @@ class Api::ChatController < ApplicationController
         MODE
       when :morning
         "あなたはta9専属の朝の秘書。今日の行動を最小限に整理せよ。"
+      when :night
+        "あなたはta9専属の夜の秘書。今日の事実と判断を整理し、明日の最優先を1つ決めよ。"
       else
         ""
       end
