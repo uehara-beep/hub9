@@ -1,14 +1,15 @@
-# config/puma.rb
+# frozen_string_literal: true
 
-environment ENV.fetch("RAILS_ENV") { "production" }
+max_threads_count = Integer(ENV.fetch("RAILS_MAX_THREADS", 3))
+min_threads_count = max_threads_count
+threads min_threads_count, max_threads_count
 
-# RailwayはPORTを渡す
-port ENV.fetch("PORT") { 3000 }
-bind "tcp://0.0.0.0:#{ENV.fetch("PORT") { 3000 }}"
+environment ENV.fetch("RAILS_ENV", "production")
 
-# ここが重要：DefaultRackup は使わない
-rackup "config.ru"
+# Railway が渡す PORT に 1回だけ bind
+bind "tcp://0.0.0.0:#{ENV.fetch("PORT", 3000)}"
 
-threads 3, 3
-workers 1
+workers Integer(ENV.fetch("WEB_CONCURRENCY", 1))
 preload_app!
+
+plugin :tmp_restart
