@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "/vault", to: "vault#index"
   namespace :api do
     get "health", to: "health#index"
     post "chat", to: "chat#create"
