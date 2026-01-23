@@ -37,7 +37,7 @@
         font-weight: 600;
         cursor: pointer;
         background: #f3f4f6;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
       }
       .sec-btn:hover {
         transform: translateY(-1px);
@@ -45,6 +45,10 @@
       }
       .sec-btn:active {
         transform: scale(0.96);
+      }
+      .sec-btn.done {
+        opacity: 0.6;
+        pointer-events: none;
       }
       input[type="text"] {
         width: 100%;
@@ -71,26 +75,52 @@
         margin-top: 16px;
         min-height: 100px;
       }
-      .message {
-        padding: 12px;
-        background: #f0f0f0;
-        border-radius: 8px;
-        margin-bottom: 8px;
-        white-space: pre-wrap;
+      .card {
+        padding: 16px;
+        background: #f9fafb;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        border: 1px solid #e5e7eb;
+        animation: fadeUp 0.4s ease-out;
       }
-      .message.user {
+      .card.user {
         background: #e0f2fe;
+        border-color: #bae6fd;
       }
-      .message .name {
+      .card .name {
         font-weight: 600;
         font-size: 12px;
         color: #6b7280;
-        margin-bottom: 4px;
+        margin-bottom: 8px;
+      }
+      .card .content {
+        white-space: pre-wrap;
+        line-height: 1.6;
+      }
+      .card .content .highlight {
+        color: #dc2626;
+        font-weight: 600;
+      }
+      .card .content .muted {
+        color: #9ca3af;
+      }
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
       }
       #typing {
         padding: 12px;
         color: #6b7280;
         font-style: italic;
+        animation: fadeUp 0.3s ease-out;
+      }
+      .briefing-header {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1f2937;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 8px;
+        margin-bottom: 12px;
       }
     </style>
   </head>
@@ -100,8 +130,8 @@
       <h1>HUB9 Chat</h1>
 
       <div id="secretary-bar">
-        <button class="sec-btn" onclick="sendQuick('/朝')">🌅 朝の秘書</button>
-        <button class="sec-btn" onclick="sendQuick('/夜')">🌙 夜の秘書</button>
+        <button class="sec-btn morning" onclick="sendQuick('/朝', 'morning')">🌅 朝の秘書</button>
+        <button class="sec-btn night" onclick="sendQuick('/夜', 'night')">🌙 夜の秘書</button>
       </div>
 
       <form id="chat-form">
@@ -125,14 +155,27 @@
       if (el) el.remove();
     }
 
-    function appendMessage(name, text, isUser = false) {
+    function appendCard(name, text, isUser = false, type = null) {
       const el = document.createElement("div");
-      el.className = "message" + (isUser ? " user" : "");
-      el.innerHTML = `<div class="name">${name}</div>${text}`;
+      el.className = "card" + (isUser ? " user" : "");
+
+      let header = "";
+      if (type === "morning") {
+        header = '<div class="briefing-header">🌅 朝の秘書ブリーフ</div>';
+      } else if (type === "night") {
+        header = '<div class="briefing-header">🌙 夜の秘書レビュー</div>';
+      }
+
+      el.innerHTML = `<div class="name">${name}</div>${header}<div class="content">${text}</div>`;
       document.querySelector("#chat").appendChild(el);
     }
 
-    function sendQuick(command) {
+    function markAutoRun(type) {
+      const el = document.querySelector(`.sec-btn.${type}`);
+      if (el) el.classList.add("done");
+    }
+
+    function sendQuick(command, type) {
       showTyping("HUB9");
 
       fetch("/api/chat", {
@@ -143,7 +186,8 @@
       .then(res => res.json())
       .then(data => {
         hideTyping();
-        appendMessage("HUB9", data.reply);
+        appendCard("HUB9", data.reply, false, type);
+        markAutoRun(type);
       });
     }
 
@@ -152,7 +196,7 @@
       const msg = document.getElementById("message").value;
       if (!msg.trim()) return;
 
-      appendMessage("あなた", msg, true);
+      appendCard("あなた", msg, true);
       document.getElementById("message").value = "";
       showTyping("HUB9");
 
@@ -164,7 +208,7 @@
 
       const data = await res.json();
       hideTyping();
-      appendMessage("HUB9", data.reply);
+      appendCard("HUB9", data.reply);
     });
     </script>
   </body>
