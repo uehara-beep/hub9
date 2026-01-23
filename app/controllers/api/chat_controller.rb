@@ -84,7 +84,12 @@ class Api::ChatController < ApplicationController
       when :morning
         "あなたはta9専属の朝の秘書。今日の行動を最小限に整理せよ。"
       when :night
-        "あなたはta9専属の夜の秘書。今日の事実と判断を整理し、明日の最優先を1つ決めよ。"
+        context = DailyContext.find_by(date: Date.today)
+        night_prompt = "あなたはta9専属の夜の秘書。今日の事実と判断を整理し、明日の最優先を1つ決めよ。"
+        if context&.morning_focus.present?
+          night_prompt += "\n\n本日の朝の計画:\n#{context.morning_focus}\n\nそれを踏まえてレビューせよ。"
+        end
+        night_prompt
       else
         ""
       end
@@ -111,6 +116,12 @@ class Api::ChatController < ApplicationController
       content: reply_text,
       role: "assistant"
     )
+
+    # 朝の結果をDailyContextに保存
+    if command == :morning
+      context = DailyContext.find_or_create_by(date: Date.today)
+      context.update!(morning_focus: reply_text)
+    end
 
     render json: { reply: reply_text }
   end

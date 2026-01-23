@@ -8,6 +8,7 @@
         font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         background: #f5f5f0;
         padding: 20px;
+        margin: 0;
       }
       .chat-box {
         max-width: 600px;
@@ -17,38 +18,79 @@
         border-radius: 12px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       }
+      #secretary-bar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        gap: 12px;
+        padding: 12px 16px;
+        background: rgba(255,255,255,0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .sec-btn {
+        padding: 10px 20px;
+        border-radius: 999px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        background: #f3f4f6;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .sec-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      }
+      .sec-btn:active {
+        transform: scale(0.96);
+      }
       input[type="text"] {
         width: 100%;
         padding: 12px;
         margin-top: 12px;
         box-sizing: border-box;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
       }
-      button {
+      .submit-btn {
         margin-top: 8px;
-        padding: 8px 16px;
+        padding: 10px 20px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
       }
-      #response {
+      .submit-btn:hover {
+        background: #2563eb;
+      }
+      #chat {
         margin-top: 16px;
+        min-height: 100px;
+      }
+      .message {
         padding: 12px;
         background: #f0f0f0;
         border-radius: 8px;
-        min-height: 20px;
+        margin-bottom: 8px;
+        white-space: pre-wrap;
       }
-      .secretary-bar {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 16px;
+      .message.user {
+        background: #e0f2fe;
       }
-      .secretary-bar button {
-        padding: 10px 18px;
-        border-radius: 999px;
-        border: none;
-        background: #f3f4f6;
+      .message .name {
         font-weight: 600;
-        cursor: pointer;
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 4px;
       }
-      .secretary-bar button:hover {
-        background: #e5e7eb;
+      #typing {
+        padding: 12px;
+        color: #6b7280;
+        font-style: italic;
       }
     </style>
   </head>
@@ -57,21 +99,42 @@
     <div class="chat-box">
       <h1>HUB9 Chat</h1>
 
-      <div class="secretary-bar">
-        <button onclick="sendQuick('/朝')">🌅 朝の秘書</button>
-        <button onclick="sendQuick('/夜')">🌙 夜の秘書</button>
+      <div id="secretary-bar">
+        <button class="sec-btn" onclick="sendQuick('/朝')">🌅 朝の秘書</button>
+        <button class="sec-btn" onclick="sendQuick('/夜')">🌙 夜の秘書</button>
       </div>
 
       <form id="chat-form">
         <input type="text" id="message" placeholder="入力…" />
-        <button type="submit">送信</button>
+        <button type="submit" class="submit-btn">送信</button>
       </form>
 
-      <div id="response"></div>
+      <div id="chat"></div>
     </div>
 
     <script>
+    function showTyping(name) {
+      const el = document.createElement("div");
+      el.id = "typing";
+      el.innerText = `${name} が確認しています…`;
+      document.querySelector("#chat").appendChild(el);
+    }
+
+    function hideTyping() {
+      const el = document.getElementById("typing");
+      if (el) el.remove();
+    }
+
+    function appendMessage(name, text, isUser = false) {
+      const el = document.createElement("div");
+      el.className = "message" + (isUser ? " user" : "");
+      el.innerHTML = `<div class="name">${name}</div>${text}`;
+      document.querySelector("#chat").appendChild(el);
+    }
+
     function sendQuick(command) {
+      showTyping("HUB9");
+
       fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,13 +142,19 @@
       })
       .then(res => res.json())
       .then(data => {
-        document.getElementById("response").innerText = data.reply;
+        hideTyping();
+        appendMessage("HUB9", data.reply);
       });
     }
 
     document.getElementById("chat-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const msg = document.getElementById("message").value;
+      if (!msg.trim()) return;
+
+      appendMessage("あなた", msg, true);
+      document.getElementById("message").value = "";
+      showTyping("HUB9");
 
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -94,7 +163,8 @@
       });
 
       const data = await res.json();
-      document.getElementById("response").innerText = data.reply;
+      hideTyping();
+      appendMessage("HUB9", data.reply);
     });
     </script>
   </body>
