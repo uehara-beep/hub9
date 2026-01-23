@@ -34,12 +34,33 @@
         border-radius: 8px;
         min-height: 20px;
       }
+      .secretary-bar {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .secretary-bar button {
+        padding: 10px 18px;
+        border-radius: 999px;
+        border: none;
+        background: #f3f4f6;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .secretary-bar button:hover {
+        background: #e5e7eb;
+      }
     </style>
   </head>
 
   <body>
     <div class="chat-box">
       <h1>HUB9 Chat</h1>
+
+      <div class="secretary-bar">
+        <button onclick="sendQuick('/朝')">🌅 朝の秘書</button>
+        <button onclick="sendQuick('/夜')">🌙 夜の秘書</button>
+      </div>
 
       <form id="chat-form">
         <input type="text" id="message" placeholder="入力…" />
@@ -50,6 +71,18 @@
     </div>
 
     <script>
+    function sendQuick(command) {
+      fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: command })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("response").innerText = data.reply;
+      });
+    }
+
     document.getElementById("chat-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const msg = document.getElementById("message").value;
