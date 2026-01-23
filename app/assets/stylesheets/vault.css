@@ -38,3 +38,16 @@
   touch-action:manipulation;
   border:none;
 }
+
+.vault-sub{opacity:.7;margin-top:8px}
+.vault-cards{display:grid;gap:14px;margin-top:18px}
+.vault-card{
+  display:block;
+  padding:16px 14px;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 10px 24px rgba(0,0,0,.08);
+  text-decoration:none;
+  color:#222;
+  font-size:16px;
+}
