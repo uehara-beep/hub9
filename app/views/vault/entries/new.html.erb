@@ -38,6 +38,17 @@
         </div>
 
         <div class="field">
+          <label>カテゴリ</label>
+          <%= f.select :category, [
+            ["チャージ", "charge"],
+            ["立て替え", "advance"],
+            ["送金", "transfer"],
+            ["現金", "cash"],
+            ["裏金", "secret"]
+          ], { include_blank: "選択してください" } %>
+        </div>
+
+        <div class="field">
           <label>金額（円）</label>
           <%= f.number_field :amount_yen, inputmode: "numeric", placeholder: "例: 12000" %>
         </div>

@@ -35,6 +35,6 @@ class Vault::EntriesController < ApplicationController
   end
 
   def entry_params
-    params.require(:vault_entry).permit(:occurred_on, :kind, :amount_yen, :tag, :memo, :receipt)
+    params.require(:vault_entry).permit(:occurred_on, :kind, :category, :amount_yen, :tag, :memo, :receipt)
   end
 end
