@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  root "hub#index"
+  get  "/hub", to: "hub#index"
+  post "/hub/send", to: "hub#send_message"
+
   namespace :vault do
     resources :entries, only: [:index, :new, :create, :show, :destroy]
   end
@@ -12,5 +16,4 @@ Rails.application.routes.draw do
   unless ENV["SECRET_KEY_BASE_DUMMY"]
     devise_for :users
   end
-  root "home#index"
 end

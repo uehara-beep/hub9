@@ -1,0 +1,52 @@
+<div class="hub">
+  <!-- PC Left Rail -->
+  <aside class="hub-rail">
+    <div class="hub-brand">
+      <div class="hub-title">HUB9</div>
+      <div class="hub-sub">Ta9 専用</div>
+    </div>
+
+    <nav class="hub-modes">
+      <% @modes.each do |m| %>
+        <a class="mode-pill <%= 'is-active' if @mode == m[:key] %>"
+           href="<%= hub_path(mode: m[:key]) %>"><%= m[:label] %></a>
+      <% end %>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="hub-main">
+    <header class="hub-topbar">
+      <div class="hub-topbar-title"><%= @modes.find{|x| x[:key]==@mode}[:label] %></div>
+      <div class="hub-topbar-badge">mode <%= @mode %></div>
+    </header>
+
+    <section class="hub-chat">
+      <% @messages.each do |msg| %>
+        <div class="bubble <%= msg.role %>">
+          <div class="bubble-role"><%= msg.role %></div>
+          <div class="bubble-text"><%= simple_format(h(msg.content)) %></div>
+        </div>
+      <% end %>
+    </section>
+
+    <footer class="hub-input">
+      <%= form_with url: "/hub/send", method: :post, local: true do %>
+        <input type="hidden" name="mode" value="<%= @mode %>">
+        <input class="hub-text" name="text" placeholder="入力…" autocomplete="off">
+        <button class="hub-send" type="submit">送信</button>
+      <% end %>
+    </footer>
+
+    <!-- Mobile Bottom Tabs -->
+    <nav class="hub-tabs">
+      <% @modes.each do |m| %>
+        <a class="tab <%= 'is-active' if @mode == m[:key] %>"
+           href="<%= hub_path(mode: m[:key]) %>">
+          <span class="tab-dot"></span>
+          <span class="tab-label"><%= m[:label] %></span>
+        </a>
+      <% end %>
+    </nav>
+  </main>
+</div>
