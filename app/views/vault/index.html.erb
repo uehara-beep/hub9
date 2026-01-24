@@ -1,64 +1,55 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Vault</title>
-  <%= csrf_meta_tags %>
-  <%= stylesheet_link_tag "vault", "data-turbo-track": "reload" %>
-</head>
-<body class="vault-body">
-  <div class="vault-wrap">
-    <div class="vault-card">
-      <div class="vault-title">🔒 Vault</div>
-      <div class="vault-sub">PINを入力</div>
+<div class="vault-shell vault-bg">
+  <div class="vault-stage">
+    <div class="vault-top">
+      <h1>🐴 Vault</h1>
+      <div class="pin-hint">外に出せない記録（へそくり/領収書）</div>
+    </div>
 
-      <%= form_with url: "/vault/unlock", method: :post, local: true, class: "vault-pin-form" do %>
-        <input id="pin-input" name="pin" class="vault-pin-input" inputmode="numeric" pattern="[0-9]*"
-               maxlength="4" autocomplete="one-time-code" placeholder="••••" />
+    <div class="vault-actions vault-card pin-wrap"
+         data-controller="vault-pin"
+         data-vault-pin-length-value="4">
+      <div class="pin-title">PIN</div>
 
-        <div class="vault-pin-grid" aria-label="PIN keypad">
-          <% [1,2,3,4,5,6,7,8,9].each do |n| %>
-            <button type="button" class="vault-pin-key" data-num="<%= n %>"><%= n %></button>
-          <% end %>
+      <div class="pin-dots" aria-label="PIN dots">
+        <div class="pin-dot" data-vault-pin-target="dot"></div>
+        <div class="pin-dot" data-vault-pin-target="dot"></div>
+        <div class="pin-dot" data-vault-pin-target="dot"></div>
+        <div class="pin-dot" data-vault-pin-target="dot"></div>
+      </div>
 
-          <button type="button" class="vault-pin-key vault-pin-key--ghost" id="pin-clear">C</button>
-          <button type="button" class="vault-pin-key" data-num="0">0</button>
-          <button type="submit" class="vault-pin-key vault-pin-key--ok">OK</button>
-        </div>
+      <input type="password"
+             inputmode="numeric"
+             autocomplete="one-time-code"
+             class="sr-only"
+             data-vault-pin-target="input" />
 
-        <% if flash[:alert].present? %>
-          <div class="vault-alert"><%= flash[:alert] %></div>
+      <div class="pin-pad">
+        <% (1..9).each do |n| %>
+          <button type="button"
+                  class="pin-btn"
+                  data-action="click->vault-pin#press"
+                  data-digit="<%= n %>"><%= n %></button>
         <% end %>
+
+        <button type="button"
+                class="pin-btn ghost"
+                data-action="click->vault-pin#backspace">⌫</button>
+
+        <button type="button"
+                class="pin-btn"
+                data-action="click->vault-pin#press"
+                data-digit="0">0</button>
+
+        <button type="button"
+                class="pin-btn primary"
+                data-action="click->vault-pin#submit">OK</button>
+      </div>
+
+      <div class="pin-hint">数字をタップ → OK</div>
+
+      <% if flash[:alert].present? %>
+        <div class="vault-alert"><%= flash[:alert] %></div>
       <% end %>
     </div>
   </div>
-
-  <script>
-  (function(){
-    const input = document.getElementById("pin-input");
-    const keys  = document.querySelectorAll(".vault-pin-key[data-num]");
-    const clear = document.getElementById("pin-clear");
-
-    const focusInput = () => { try { input.focus({preventScroll:true}); } catch(e) { input.focus(); } };
-
-    keys.forEach(btn => {
-      btn.addEventListener("click", () => {
-        focusInput();
-        const n = btn.dataset.num;
-        if (!n) return;
-        if (input.value.length >= 4) return;
-        input.value = (input.value || "") + n;
-      }, {passive:true});
-    });
-
-    clear.addEventListener("click", () => {
-      input.value = "";
-      focusInput();
-    }, {passive:true});
-
-    setTimeout(focusInput, 50);
-  })();
-  </script>
-</body>
-</html>
+</div>

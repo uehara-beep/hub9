@@ -1,506 +1,375 @@
+/* ========= HUB9 Vault (Hermes vibe) - Mobile First ========= */
+
 :root{
-  --hermes:#ff7a00;
-  --bg:#f6f3ef;
-  --card:#fff;
-  --txt:#1a1a1a;
-  --sub:#666;
-  --danger:#d9534f;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}
-
-/* ========== Common Layout ========== */
-.vault-body{
-  background:var(--bg);
-  min-height:100vh;
-  padding-bottom:env(safe-area-inset-bottom);
-}
-.vault-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px 16px;
-  background:var(--hermes);
-  color:#fff;
-}
-.vault-title{font-size:18px;font-weight:700}
-.vault-actions{display:flex;gap:8px}
-.vault-main{padding:16px}
-
-/* ========== Horse Button ========== */
-.horse-btn{
-  width:44px;height:44px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:14px;
-  background:rgba(255,255,255,.25);
-  font-size:20px;
-  text-decoration:none;
-  color:#fff;
-  user-select:none;
-  touch-action:manipulation;
-  border:none;
+  --hermes: #ff7a00;
+  --ink: #111111;
+  --muted: #6b7280;
+  --paper: #f6f1ea;
+  --card: rgba(255,255,255,.78);
+  --shadow: 0 18px 45px rgba(0,0,0,.08);
 }
 
-/* ========== Card ========== */
-.vault-card{
-  background:var(--card);
-  border-radius:18px;
-  box-shadow:0 10px 28px rgba(0,0,0,.08);
-  padding:16px;
-  margin-bottom:16px;
-}
-.vault-card-h{
-  font-size:13px;
-  font-weight:600;
-  color:var(--sub);
-  margin-bottom:12px;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
+body{
+  background: var(--paper);
+  color: var(--ink);
 }
 
-/* ========== PIN Screen ========== */
-.vault-screen{
-  min-height:100vh;
-  padding:24px;
-  background:var(--bg);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-}
-.pin-dots{
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  margin:24px 0;
-}
-.pin-dots span{
-  width:14px;height:14px;
-  border-radius:50%;
-  background:#ddd;
-  transition:background .15s;
-}
-.pin-dots span.filled{background:var(--hermes)}
-.pin-pad{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
-  max-width:260px;
-  margin:0 auto;
-}
-.pin-pad button{
-  width:64px;height:64px;
-  border-radius:50%;
-  border:none;
-  background:var(--card);
-  box-shadow:0 4px 12px rgba(0,0,0,.1);
-  font-size:24px;
-  font-weight:500;
-  color:var(--txt);
-  cursor:pointer;
-  touch-action:manipulation;
-}
-.pin-pad button:active{background:#f0ebe5}
-
-/* ========== Home Cards ========== */
-.vault-sub{opacity:.7;margin-top:8px;font-size:14px}
-.vault-cards{display:grid;gap:14px;margin-top:18px}
-
-/* ========== Entry List ========== */
-.vault-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px 0;
-  border-bottom:1px solid #eee;
-  text-decoration:none;
-  color:var(--txt);
-}
-.vault-row:last-child{border-bottom:none}
-.row-left{flex:1;min-width:0}
-.row-date{font-size:12px;color:var(--sub)}
-.row-tag{font-size:15px;font-weight:600;margin-top:2px}
-.row-memo{font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row-right{text-align:right;padding-left:12px}
-.row-kind{
-  display:inline-block;
-  padding:2px 8px;
-  border-radius:8px;
-  font-size:11px;
-  font-weight:600;
-}
-.row-kind.expense{background:#ffe5e5;color:#c0392b}
-.row-kind.income{background:#e5f7e5;color:#27ae60}
-.row-amt{font-size:16px;font-weight:700;margin-top:4px}
-
-.vault-empty{
-  text-align:center;
-  padding:32px 0;
-  color:var(--sub);
-  font-size:14px;
-}
-.vault-toast{
-  background:var(--hermes);
-  color:#fff;
-  text-align:center;
-  padding:10px 16px;
-  font-size:14px;
-}
-
-/* ========== Form ========== */
-.field{margin-bottom:18px}
-.field label{
-  display:block;
-  font-size:13px;
-  font-weight:600;
-  color:var(--sub);
-  margin-bottom:6px;
-}
-.field input[type="text"],
-.field input[type="number"],
-.field input[type="date"],
-.field select,
-.field textarea{
-  width:100%;
-  padding:12px 14px;
-  border:1px solid #ddd;
-  border-radius:12px;
-  font-size:16px;
-  background:#fff;
-  -webkit-appearance:none;
-}
-.field textarea{resize:vertical}
-.field input[type="file"]{
-  padding:10px 0;
-  border:none;
-  font-size:14px;
-}
-.hint{font-size:12px;color:var(--sub);margin-top:4px}
-
-.vault-primary{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  background:var(--hermes);
-  color:#fff;
-  font-size:16px;
-  font-weight:600;
-  cursor:pointer;
-  touch-action:manipulation;
-}
-.vault-primary:active{opacity:.85}
-
-.vault-error{
-  background:#ffe5e5;
-  border-radius:12px;
-  padding:12px 14px;
-  margin-bottom:16px;
-  font-size:14px;
-  color:#c0392b;
-}
-
-/* ========== Detail View ========== */
-.detail-row{
-  display:flex;
-  padding:10px 0;
-  border-bottom:1px solid #eee;
-}
-.detail-row:last-child{border-bottom:none}
-.detail-label{
-  width:80px;
-  flex-shrink:0;
-  font-size:13px;
-  color:var(--sub);
-}
-.detail-value{
-  flex:1;
-  font-size:15px;
-}
-.detail-amt{font-size:20px;font-weight:700;color:var(--hermes)}
-.detail-memo{white-space:pre-wrap}
-.receipt-img{
-  max-width:100%;
-  border-radius:12px;
-  margin-top:8px;
-}
-
-/* ========== Danger Zone ========== */
-.danger-zone{border:1px solid var(--danger)}
-.vault-danger{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  background:var(--danger);
-  color:#fff;
-  font-size:15px;
-  font-weight:600;
-  cursor:pointer;
-}
-.vault-danger:active{opacity:.85}
-
-/* ========== PIN Screen (New) ========== */
-.vault-wrap{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-}
-.vault-card--wide{
-  width:100%;
-  max-width:360px;
-}
-.vault-pin-form{margin-top:16px}
-.vault-pin-input{
-  width:100%;
-  padding:14px;
-  border:1px solid #ddd;
-  border-radius:14px;
-  font-size:24px;
-  font-weight:700;
-  text-align:center;
-  letter-spacing:8px;
-  background:#fff;
-  -webkit-appearance:none;
-}
-.vault-pin-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  margin-top:14px;
-}
-.vault-pin-key{
-  position:relative;
-  z-index:50;
-  pointer-events:auto;
-  -webkit-tap-highlight-color:transparent;
-  height:54px;
-  border-radius:16px;
-  border:1px solid rgba(0,0,0,.08);
-  background:rgba(255,255,255,.78);
-  font-size:20px;
-  font-weight:700;
-  cursor:pointer;
-  touch-action:manipulation;
-}
-.vault-pin-key:active{background:#f0ebe5}
-.vault-pin-key--ghost{
-  background:transparent;
-  border-color:transparent;
-  color:var(--danger);
-}
-.vault-pin-key--ok{
-  background:var(--hermes);
-  color:#fff;
-  border-color:var(--hermes);
-}
-.vault-alert{
-  margin-top:14px;
-  padding:10px 14px;
-  background:#ffe5e5;
-  border-radius:10px;
-  color:#c0392b;
-  font-size:14px;
-  text-align:center;
-}
-
-/* ========== Money Quick Entry ========== */
-.money-form{margin-top:16px}
-.money-cats{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-bottom:18px;
-}
-.money-cat{
-  flex:1;
-  min-width:70px;
-  padding:10px 6px;
-  border:1px solid #ddd;
-  border-radius:12px;
-  background:#fff;
-  font-size:13px;
-  font-weight:600;
-  cursor:pointer;
-  touch-action:manipulation;
-  transition:all .15s;
-}
-.money-cat.is-active{
-  background:var(--hermes);
-  color:#fff;
-  border-color:var(--hermes);
-}
-.money-cat--dark{
-  background:#333;
-  color:#fff;
-  border-color:#333;
-}
-.money-cat--dark.is-active{
-  background:#000;
-  border-color:#000;
-}
-.money-row{margin-bottom:16px}
-.money-label{
-  display:block;
-  font-size:13px;
-  font-weight:600;
-  color:var(--sub);
-  margin-bottom:6px;
-}
-.money-amount{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.money-input{
-  flex:1;
-  padding:12px 14px;
-  border:1px solid #ddd;
-  border-radius:12px;
-  font-size:16px;
-  background:#fff;
-  -webkit-appearance:none;
-}
-.money-suffix{
-  font-size:16px;
-  font-weight:600;
-  color:var(--txt);
-}
-.money-textarea{
-  width:100%;
-  padding:12px 14px;
-  border:1px solid #ddd;
-  border-radius:12px;
-  font-size:16px;
-  background:#fff;
-  resize:vertical;
-  -webkit-appearance:none;
-}
-.money-file{
-  padding:10px 0;
-  border:none;
-  font-size:14px;
-}
-.money-hint{
-  font-size:12px;
-  color:var(--sub);
-  margin-top:4px;
-}
-.money-submit{margin-top:8px}
-.money-danger{
-  margin-top:16px;
-  text-align:center;
-}
-.money-back{
-  color:var(--sub);
-  font-size:14px;
-  text-decoration:none;
-}
-.money-back:hover{text-decoration:underline}
-
-/* ========== iPhone Button Fix ========== */
-body::before,
-body::after,
+/* --- 背景の"膜"はタップを邪魔しない --- */
+.vault-bg,
 .vault-bg::before,
 .vault-bg::after,
-.page-bg::before,
-.page-bg::after,
-.overlay,
-.backdrop,
-.glow-layer {
+.vault-shell::before,
+.vault-shell::after{
   pointer-events: none !important;
 }
 
-.vault-page, .vault-wrap, .vault-container {
+/* --- 触れる本体は前面固定 --- */
+.vault-shell{
+  min-height: 100svh;
   position: relative;
-  z-index: 1;
+  isolation: isolate;
 }
 
-.vault-card,
-.vault-card a,
-.vault-card button,
-.vault-actions a,
-.vault-actions button {
+.vault-stage{
   position: relative;
   z-index: 5;
-  pointer-events: auto !important;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
+  pointer-events: auto;
 }
 
-/* ========== Vault Home Hero ========== */
-.vault-hero{
+.vault-card{
+  background: var(--card);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(0,0,0,.05);
+  backdrop-filter: blur(10px);
+}
+
+/* --- PIN UI --- */
+.pin-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  align-items:center;
+  justify-content:center;
+  padding: 22px 18px 28px;
+}
+
+.pin-title{
+  font-weight: 800;
+  letter-spacing: .02em;
+  font-size: 22px;
+}
+
+.pin-dots{
+  display:flex;
+  gap:10px;
+  margin-top: 8px;
+}
+
+.pin-dot{
+  width: 12px; height: 12px;
+  border-radius: 99px;
+  background: rgba(17,17,17,.12);
+}
+.pin-dot.filled{ background: rgba(17,17,17,.85); }
+
+.pin-pad{
+  width: min(360px, 92vw);
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+  position: relative;
+  z-index: 6;
+  pointer-events: auto;
+}
+
+.pin-btn{
+  height: 56px;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,.06);
+  background: rgba(255,255,255,.80);
+  box-shadow: 0 10px 24px rgba(0,0,0,.06);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink);
+  display:flex; align-items:center; justify-content:center;
+
+  /* iOS tap */
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  position: relative;
+  z-index: 7;
+  pointer-events: auto;
+}
+.pin-btn:active{
+  transform: translateY(1px) scale(.99);
+}
+
+.pin-btn.primary{
+  background: var(--hermes);
+  color: #fff;
+  border-color: rgba(0,0,0,.05);
+}
+
+.pin-btn.ghost{
+  background: rgba(255,255,255,.55);
+  color: var(--muted);
+}
+
+.pin-hint{
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* --- Screen Reader Only --- */
+.sr-only{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- 一覧/フォーム側 --- */
+.vault-top{
+  padding: 18px;
   text-align:center;
-  padding:32px 16px 24px;
+}
+.vault-top h1{
+  font-size: 22px;
+  font-weight: 900;
+}
+.vault-actions{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  padding: 20px 18px 40px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+.vault-action{
+  width:100%;
+  border-radius: 26px;
+  background: rgba(255,255,255,.85);
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: var(--shadow);
+  padding: 18px 18px;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--ink);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration: none;
+
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  position: relative;
+  z-index: 5;
+}
+.vault-action:active{ transform: translateY(1px); }
+
+/* --- Home Page --- */
+.vault-page{
+  min-height: 100svh;
+  background: var(--paper);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.vault-hero{
+  text-align: center;
+  padding: 32px 16px 24px;
 }
 .vault-hero h1{
-  font-size:28px;
-  margin:0;
+  font-size: 28px;
+  margin: 0;
 }
 .vault-hero p{
-  margin-top:8px;
-  font-size:14px;
-  color:var(--sub);
-}
-.vault-page{
-  min-height:100vh;
-  background:var(--bg);
-  padding-bottom:env(safe-area-inset-bottom);
-}
-.vault-page .vault-actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-  padding:0 16px;
-}
-.vault-page .vault-card{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:100px;
-  font-size:15px;
-  font-weight:600;
-  text-decoration:none;
-  color:var(--txt);
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--muted);
 }
 
-/* ========== Transfer UI ========== */
+/* --- Transfer UI --- */
 .vault-form{
-  max-width:520px;
-  margin:0 auto;
-  display:grid;
-  gap:14px;
-  padding:0 16px 32px;
+  max-width: 520px;
+  margin: 0 auto;
+  display: grid;
+  gap: 14px;
+  padding: 0 16px 32px;
 }
+
 .seg{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
+
 .seg-item{
-  display:block;
-  cursor:pointer;
-  user-select:none;
+  display: block;
+  cursor: pointer;
+  user-select: none;
 }
-.seg-item input{display:none}
+.seg-item input{ display: none; }
 .seg-item span{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:14px 10px;
-  border-radius:16px;
-  border:1px solid rgba(0,0,0,.08);
-  background:rgba(255,255,255,.75);
-  font-weight:700;
-  transition:all .15s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 14px 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(255,255,255,.75);
+  font-weight: 700;
+  transition: all .15s;
 }
 .seg-item input:checked + span{
-  border-color:var(--hermes);
-  background:var(--hermes);
-  color:#fff;
-  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  border-color: var(--hermes);
+  background: var(--hermes);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0,0,0,.08);
+}
+
+.field{
+  display: grid;
+  gap: 6px;
+}
+.field > span{
+  font-size: 13px;
+  opacity: .75;
+}
+.field input,
+.field select,
+.field textarea{
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(255,255,255,.85);
+  font-size: 16px;
+  -webkit-appearance: none;
+}
+.field textarea{ resize: vertical; }
+
+/* --- Entry List --- */
+.vault-list{
+  padding: 0 16px 32px;
+}
+.vault-row{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+  text-decoration: none;
+  color: var(--ink);
+}
+.vault-row:last-child{ border-bottom: none; }
+.row-left{ flex: 1; min-width: 0; }
+.row-date{ font-size: 12px; color: var(--muted); }
+.row-tag{ font-size: 15px; font-weight: 600; margin-top: 2px; }
+.row-memo{ font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row-right{ text-align: right; padding-left: 12px; }
+.row-kind{
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.row-kind.expense{ background: #ffe5e5; color: #c0392b; }
+.row-kind.income{ background: #e5f7e5; color: #27ae60; }
+.row-amt{ font-size: 16px; font-weight: 700; margin-top: 4px; }
+
+.vault-empty{
+  text-align: center;
+  padding: 32px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* --- Detail View --- */
+.detail-row{
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+.detail-row:last-child{ border-bottom: none; }
+.detail-label{
+  width: 80px;
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.detail-value{
+  flex: 1;
+  font-size: 15px;
+}
+.detail-amt{ font-size: 20px; font-weight: 700; color: var(--hermes); }
+.detail-memo{ white-space: pre-wrap; }
+.receipt-img{
+  max-width: 100%;
+  border-radius: 12px;
+  margin-top: 8px;
+}
+
+/* --- Buttons --- */
+.horse-btn{
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 18px;
+  background: var(--hermes);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.horse-btn:active{ opacity: .85; }
+
+.vault-danger{
+  margin-top: 16px;
+  text-align: center;
+}
+.vault-danger a{
+  color: var(--muted);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+/* --- Alerts --- */
+.vault-alert{
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: #ffe5e5;
+  border-radius: 10px;
+  color: #c0392b;
+  font-size: 14px;
+  text-align: center;
+}
+.vault-toast{
+  background: var(--hermes);
+  color: #fff;
+  text-align: center;
+  padding: 10px 16px;
+  font-size: 14px;
+}
+.vault-error{
+  background: #ffe5e5;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #c0392b;
 }
