@@ -7,7 +7,10 @@ Rails.application.routes.draw do
     resources :entries, only: [:index, :new, :create, :show, :destroy]
   end
   get "/vault", to: "vault#index"
+  post "/vault/unlock", to: "vault#unlock"
   get "/vault/home", to: "vault#home"
+  get "/vault/money", to: "vault#money"
+  post "/vault/money", to: "vault#money_create"
   # Notifications
   get "/notifications", to: "notifications#index"
   get "/notifications/:id/read", to: "notifications#read", as: :read_notification

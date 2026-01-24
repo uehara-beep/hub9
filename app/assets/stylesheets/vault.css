@@ -241,3 +241,163 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Hiragino San
   cursor:pointer;
 }
 .vault-danger:active{opacity:.85}
+
+/* ========== PIN Screen (New) ========== */
+.vault-wrap{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+.vault-card--wide{
+  width:100%;
+  max-width:360px;
+}
+.vault-pin-form{margin-top:16px}
+.vault-pin-input{
+  width:100%;
+  padding:14px;
+  border:1px solid #ddd;
+  border-radius:14px;
+  font-size:24px;
+  font-weight:700;
+  text-align:center;
+  letter-spacing:8px;
+  background:#fff;
+  -webkit-appearance:none;
+}
+.vault-pin-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:14px;
+}
+.vault-pin-key{
+  position:relative;
+  z-index:50;
+  pointer-events:auto;
+  -webkit-tap-highlight-color:transparent;
+  height:54px;
+  border-radius:16px;
+  border:1px solid rgba(0,0,0,.08);
+  background:rgba(255,255,255,.78);
+  font-size:20px;
+  font-weight:700;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+.vault-pin-key:active{background:#f0ebe5}
+.vault-pin-key--ghost{
+  background:transparent;
+  border-color:transparent;
+  color:var(--danger);
+}
+.vault-pin-key--ok{
+  background:var(--hermes);
+  color:#fff;
+  border-color:var(--hermes);
+}
+.vault-alert{
+  margin-top:14px;
+  padding:10px 14px;
+  background:#ffe5e5;
+  border-radius:10px;
+  color:#c0392b;
+  font-size:14px;
+  text-align:center;
+}
+
+/* ========== Money Quick Entry ========== */
+.money-form{margin-top:16px}
+.money-cats{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+.money-cat{
+  flex:1;
+  min-width:70px;
+  padding:10px 6px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  background:#fff;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:all .15s;
+}
+.money-cat.is-active{
+  background:var(--hermes);
+  color:#fff;
+  border-color:var(--hermes);
+}
+.money-cat--dark{
+  background:#333;
+  color:#fff;
+  border-color:#333;
+}
+.money-cat--dark.is-active{
+  background:#000;
+  border-color:#000;
+}
+.money-row{margin-bottom:16px}
+.money-label{
+  display:block;
+  font-size:13px;
+  font-weight:600;
+  color:var(--sub);
+  margin-bottom:6px;
+}
+.money-amount{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.money-input{
+  flex:1;
+  padding:12px 14px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  font-size:16px;
+  background:#fff;
+  -webkit-appearance:none;
+}
+.money-suffix{
+  font-size:16px;
+  font-weight:600;
+  color:var(--txt);
+}
+.money-textarea{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  font-size:16px;
+  background:#fff;
+  resize:vertical;
+  -webkit-appearance:none;
+}
+.money-file{
+  padding:10px 0;
+  border:none;
+  font-size:14px;
+}
+.money-hint{
+  font-size:12px;
+  color:var(--sub);
+  margin-top:4px;
+}
+.money-submit{margin-top:8px}
+.money-danger{
+  margin-top:16px;
+  text-align:center;
+}
+.money-back{
+  color:var(--sub);
+  font-size:14px;
+  text-decoration:none;
+}
+.money-back:hover{text-decoration:underline}

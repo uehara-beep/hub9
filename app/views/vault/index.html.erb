@@ -5,162 +5,60 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Vault</title>
   <%= csrf_meta_tags %>
-  <style>
-    :root {
-      --bg: #f6f3ef;
-      --hermes: #ff7a00;
-      --text: #1a1a1a;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
-      padding: 20px;
-    }
-    h1 {
-      font-size: 28px;
-      margin-bottom: 24px;
-      color: var(--text);
-    }
-    .pin-dots {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-    .pin-dots span {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #ddd;
-      transition: background 0.15s;
-    }
-    .pin-dots span.filled {
-      background: var(--hermes);
-    }
-    .pin-pad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      max-width: 280px;
-    }
-    .vault-pin-key {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      border: none;
-      background: #fff;
-      box-shadow: 0 4px 16px rgba(0,0,0,.1);
-      font-size: 28px;
-      font-weight: 600;
-      color: var(--text);
-      cursor: pointer;
-      touch-action: manipulation;
-      pointer-events: auto;
-      z-index: 10;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .vault-pin-key:active {
-      background: #f0ebe5;
-      transform: scale(0.95);
-    }
-    .pin-pad-row {
-      display: contents;
-    }
-    .pin-error {
-      color: #c0392b;
-      margin-top: 16px;
-      font-size: 14px;
-    }
-    #pin-input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
-  </style>
+  <%= stylesheet_link_tag "vault", "data-turbo-track": "reload" %>
 </head>
-<body>
-  <h1>🔒 Vault</h1>
+<body class="vault-body">
+  <div class="vault-wrap">
+    <div class="vault-card">
+      <div class="vault-title">🔒 Vault</div>
+      <div class="vault-sub">PINを入力</div>
 
-  <div class="pin-dots" id="pin-dots">
-    <span></span><span></span><span></span><span></span>
+      <%= form_with url: "/vault/unlock", method: :post, local: true, class: "vault-pin-form" do %>
+        <input id="pin-input" name="pin" class="vault-pin-input" inputmode="numeric" pattern="[0-9]*"
+               maxlength="4" autocomplete="one-time-code" placeholder="••••" />
+
+        <div class="vault-pin-grid" aria-label="PIN keypad">
+          <% [1,2,3,4,5,6,7,8,9].each do |n| %>
+            <button type="button" class="vault-pin-key" data-num="<%= n %>"><%= n %></button>
+          <% end %>
+
+          <button type="button" class="vault-pin-key vault-pin-key--ghost" id="pin-clear">C</button>
+          <button type="button" class="vault-pin-key" data-num="0">0</button>
+          <button type="submit" class="vault-pin-key vault-pin-key--ok">OK</button>
+        </div>
+
+        <% if flash[:alert].present? %>
+          <div class="vault-alert"><%= flash[:alert] %></div>
+        <% end %>
+      <% end %>
+    </div>
   </div>
-
-  <input type="password" id="pin-input" maxlength="4" autocomplete="off">
-
-  <div class="pin-pad">
-    <% (1..9).each do |n| %>
-      <button type="button" class="vault-pin-key" data-num="<%= n %>"><%= n %></button>
-    <% end %>
-    <div></div>
-    <button type="button" class="vault-pin-key" data-num="0">0</button>
-    <button type="button" class="vault-pin-key" data-num="del">←</button>
-  </div>
-
-  <div class="pin-error" id="pin-error" style="display:none;">PINが違います</div>
 
   <script>
-    const input = document.getElementById('pin-input');
-    const dots = document.querySelectorAll('#pin-dots span');
-    const errorEl = document.getElementById('pin-error');
+  (function(){
+    const input = document.getElementById("pin-input");
+    const keys  = document.querySelectorAll(".vault-pin-key[data-num]");
+    const clear = document.getElementById("pin-clear");
 
-    function updateDots() {
-      const len = input.value.length;
-      dots.forEach((dot, i) => {
-        dot.classList.toggle('filled', i < len);
-      });
-    }
+    const focusInput = () => { try { input.focus({preventScroll:true}); } catch(e) { input.focus(); } };
 
-    document.querySelectorAll('.vault-pin-key').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const num = btn.dataset.num;
-
-        if (num === 'del') {
-          input.value = input.value.slice(0, -1);
-        } else if (input.value.length < 4) {
-          input.value += num;
-        }
-
-        updateDots();
-        errorEl.style.display = 'none';
-
-        if (input.value.length === 4) {
-          submitPin();
-        }
-      });
+    keys.forEach(btn => {
+      btn.addEventListener("click", () => {
+        focusInput();
+        const n = btn.dataset.num;
+        if (!n) return;
+        if (input.value.length >= 4) return;
+        input.value = (input.value || "") + n;
+      }, {passive:true});
     });
 
-    async function submitPin() {
-      const pin = input.value;
-      try {
-        const res = await fetch('/api/vault/unlock', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-          },
-          body: JSON.stringify({ pin })
-        });
-        const data = await res.json();
-        if (data.ok) {
-          window.location.href = '/vault/home';
-        } else {
-          errorEl.style.display = 'block';
-          input.value = '';
-          updateDots();
-        }
-      } catch (e) {
-        errorEl.textContent = 'エラーが発生しました';
-        errorEl.style.display = 'block';
-        input.value = '';
-        updateDots();
-      }
-    }
+    clear.addEventListener("click", () => {
+      input.value = "";
+      focusInput();
+    }, {passive:true});
+
+    setTimeout(focusInput, 50);
+  })();
   </script>
 </body>
 </html>
