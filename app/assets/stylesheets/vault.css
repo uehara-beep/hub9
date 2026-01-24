@@ -401,3 +401,69 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Hiragino San
   text-decoration:none;
 }
 .money-back:hover{text-decoration:underline}
+
+/* ========== iPhone Button Fix ========== */
+body::before,
+body::after,
+.vault-bg::before,
+.vault-bg::after,
+.page-bg::before,
+.page-bg::after,
+.overlay,
+.backdrop,
+.glow-layer {
+  pointer-events: none !important;
+}
+
+.vault-page, .vault-wrap, .vault-container {
+  position: relative;
+  z-index: 1;
+}
+
+.vault-card,
+.vault-card a,
+.vault-card button,
+.vault-actions a,
+.vault-actions button {
+  position: relative;
+  z-index: 5;
+  pointer-events: auto !important;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ========== Vault Home Hero ========== */
+.vault-hero{
+  text-align:center;
+  padding:32px 16px 24px;
+}
+.vault-hero h1{
+  font-size:28px;
+  margin:0;
+}
+.vault-hero p{
+  margin-top:8px;
+  font-size:14px;
+  color:var(--sub);
+}
+.vault-page{
+  min-height:100vh;
+  background:var(--bg);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.vault-page .vault-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  padding:0 16px;
+}
+.vault-page .vault-card{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100px;
+  font-size:15px;
+  font-weight:600;
+  text-decoration:none;
+  color:var(--txt);
+}

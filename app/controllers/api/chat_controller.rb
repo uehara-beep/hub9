@@ -2,30 +2,24 @@ class Api::ChatController < ApplicationController
   protect_from_forgery with: :null_session
 
   def create
-    payload = JSON.parse(request.raw_post) rescue {}
-    mode = payload["mode"].to_s
-    message = payload["message"].to_s
+    text = params[:message].to_s
+    history = (session[:hub9_chat_history] ||= [])
+    history << { role: "user", content: text }
+    history = history.last(12)
 
-    # /コマンドが来たら、modeや本文を差し替え
-    applied = Hub9::Assistant.apply_slash_command(message)
-    mode = applied[:mode] if applied[:mode]
-    message = applied[:text]
+    ai = Hub9::AiChat.new(mode_label: "Hyper秘書")
+    is_record = Hub9::HyperSecretary.record_intent?(text)
+    temperature = is_record ? 0.2 : 0.8
 
-    system = Hub9::Assistant.mode_system(mode)
-
-    client = OpenAI::Client.new(access_token: ENV.fetch("OPENAI_API_KEY"))
-    resp = client.chat(
-      parameters: {
-        model: ENV.fetch("OPENAI_MODEL", "gpt-4o-mini"),
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: message }
-        ]
-      }
+    answer = ai.call(
+      messages: history.map { |m| { role: m[:role], content: m[:content] } },
+      temperature: temperature
     )
 
-    content = resp.dig("choices", 0, "message", "content") || ""
-    render json: { reply: content, mode: mode.presence || "default" }
+    history << { role: "assistant", content: answer }
+    session[:hub9_chat_history] = history.last(12)
+
+    render json: { reply: answer, record_intent: is_record }
   rescue => e
     Rails.logger.error("[api/chat] #{e.class}: #{e.message}\n#{e.backtrace&.first(10)&.join("\n")}")
     render json: { error: e.message }, status: 500

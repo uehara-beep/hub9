@@ -1,9 +1,24 @@
-<div class="vault-screen">
-  <h1>🐴 Vault</h1>
-  <p class="vault-sub">外に出せない記録（へそくり/領収書）</p>
+<div class="vault-page">
+  <div class="vault-hero">
+    <h1>🐴 Vault</h1>
+    <p>外に出せない記録（へそくり/領収書）</p>
+  </div>
 
-  <div class="vault-cards">
-    <a class="vault-card" href="#">💴 裏金メモ</a>
-    <a class="vault-card" href="#">🧾 領収書（写メ）</a>
+  <div class="vault-actions">
+    <%= link_to vault_entries_path(hidden: 1), class: "vault-card" do %>
+      💴 裏金メモ
+    <% end %>
+
+    <%= link_to new_vault_entry_path(kind: "out", hidden: 1), class: "vault-card" do %>
+      🧾 領収書（写メ）
+    <% end %>
+
+    <%= link_to "/vault/money", class: "vault-card" do %>
+      💰 お金メモ
+    <% end %>
+
+    <%= link_to vault_entries_path, class: "vault-card" do %>
+      📋 全履歴
+    <% end %>
   </div>
 </div>
