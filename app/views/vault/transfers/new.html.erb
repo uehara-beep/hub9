@@ -1,0 +1,66 @@
+<div class="vault-page">
+  <div class="vault-hero">
+    <h1>💸 送金</h1>
+    <p>貰い / 支払い / 立替 を1画面で記録</p>
+  </div>
+
+  <form class="vault-form" action="/vault/transfer" method="post" enctype="multipart/form-data">
+    <%= csrf_meta_tags %>
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+
+    <div class="seg">
+      <label class="seg-item">
+        <input type="radio" name="kind" value="in" <%= @kind == "in" ? "checked" : "" %>>
+        <span>貰い（IN）</span>
+      </label>
+      <label class="seg-item">
+        <input type="radio" name="kind" value="out" <%= @kind == "out" ? "checked" : "" %>>
+        <span>支払い（OUT）</span>
+      </label>
+    </div>
+
+    <label class="field">
+      <span>金額</span>
+      <input name="amount" inputmode="numeric" pattern="[0-9]*" placeholder="例: 12000" required>
+    </label>
+
+    <label class="field">
+      <span>相手（任意）</span>
+      <input name="counterparty" placeholder="例: ○○ / 会社名 / 個人">
+    </label>
+
+    <label class="field">
+      <span>カテゴリ（一次）</span>
+      <select name="category">
+        <option value="">選択</option>
+        <option>立替</option>
+        <option>返済</option>
+        <option>移動（口座↔現金）</option>
+        <option>へそくり増</option>
+        <option>へそくり減</option>
+        <option>その他</option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span>内訳（二次）</span>
+      <input name="subcategory" placeholder="例: 食事 / 交通 / 備品 / 交際 ...">
+    </label>
+
+    <label class="field">
+      <span>メモ</span>
+      <textarea name="memo" rows="3" placeholder="補足（任意）"></textarea>
+    </label>
+
+    <label class="field">
+      <span>領収書（写メ・任意 / OCR）</span>
+      <input type="file" name="receipt" accept="image/*" capture="environment">
+    </label>
+
+    <button class="horse-btn" type="submit">保存</button>
+
+    <div class="money-danger">
+      <a class="money-back" href="/vault/home">← 戻る</a>
+    </div>
+  </form>
+</div>

@@ -467,3 +467,40 @@ body::after,
   text-decoration:none;
   color:var(--txt);
 }
+
+/* ========== Transfer UI ========== */
+.vault-form{
+  max-width:520px;
+  margin:0 auto;
+  display:grid;
+  gap:14px;
+  padding:0 16px 32px;
+}
+.seg{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.seg-item{
+  display:block;
+  cursor:pointer;
+  user-select:none;
+}
+.seg-item input{display:none}
+.seg-item span{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:14px 10px;
+  border-radius:16px;
+  border:1px solid rgba(0,0,0,.08);
+  background:rgba(255,255,255,.75);
+  font-weight:700;
+  transition:all .15s;
+}
+.seg-item input:checked + span{
+  border-color:var(--hermes);
+  background:var(--hermes);
+  color:#fff;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+}

@@ -5,20 +5,16 @@
   </div>
 
   <div class="vault-actions">
-    <%= link_to vault_entries_path(hidden: 1), class: "vault-card" do %>
+    <%= link_to "/vault/transfer", class: "vault-card" do %>
+      💸 送金（貰い/支払い/立替）
+    <% end %>
+
+    <%= link_to "/vault/entries?hidden=1", class: "vault-card" do %>
       💴 裏金メモ
     <% end %>
 
-    <%= link_to new_vault_entry_path(kind: "out", hidden: 1), class: "vault-card" do %>
+    <%= link_to "/vault/entries/new?kind=out&hidden=1", class: "vault-card" do %>
       🧾 領収書（写メ）
-    <% end %>
-
-    <%= link_to "/vault/money", class: "vault-card" do %>
-      💰 お金メモ
-    <% end %>
-
-    <%= link_to vault_entries_path, class: "vault-card" do %>
-      📋 全履歴
     <% end %>
   </div>
 </div>

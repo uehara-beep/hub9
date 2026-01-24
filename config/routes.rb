@@ -5,6 +5,8 @@ Rails.application.routes.draw do
 
   namespace :vault do
     resources :entries, only: [:index, :new, :create, :show, :destroy]
+    get  "transfer", to: "transfers#new"
+    post "transfer", to: "transfers#create"
   end
   get "/vault", to: "vault#index"
   post "/vault/unlock", to: "vault#unlock"
