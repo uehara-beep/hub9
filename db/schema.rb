@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_24_025912) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_24_081730) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -131,9 +131,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_24_025912) do
     t.integer "amount_yen"
     t.datetime "created_at", null: false
     t.datetime "deleted_at"
+    t.datetime "expires_at"
+    t.boolean "hidden"
     t.integer "kind"
     t.text "memo"
     t.date "occurred_on"
+    t.jsonb "parsed_json"
     t.date "purge_on"
     t.datetime "purge_warned_at"
     t.string "tag"
