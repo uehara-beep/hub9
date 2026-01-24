@@ -1,0 +1,17 @@
+<div style="max-width:720px;margin:0 auto;padding:16px;">
+  <h2 style="margin:8px 0 16px;">通知</h2>
+  <% @notifications.each do |n| %>
+    <div style="padding:12px 14px;border:1px solid rgba(0,0,0,.08);border-radius:14px;margin-bottom:10px;background:#fff;">
+      <div style="display:flex;justify-content:space-between;gap:12px;">
+        <strong><%= n.title %></strong>
+        <% if n.read_at.present? %>
+          <span style="font-size:12px;opacity:.6;">既読</span>
+        <% else %>
+          <a href="<%= read_notification_path(n) %>" style="font-size:12px;">既読にする</a>
+        <% end %>
+      </div>
+      <div style="margin-top:6px;white-space:pre-wrap;"><%= n.body %></div>
+      <div style="margin-top:8px;font-size:12px;opacity:.6;"><%= n.created_at %></div>
+    </div>
+  <% end %>
+</div>

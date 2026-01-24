@@ -1,155 +1,94 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>HUB9</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-      :root{
-        --bg:#0b0f17; --card:#0f1624; --line:#1f2a3a; --text:#e7eefc; --muted:#9fb0cc;
-        --accent:#7aa2ff; --accent2:#7affc8;
-      }
-      html,body{height:100%}
-      body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system; background:var(--bg); color:var(--text);}
-      .topbar{
-        position:sticky; top:0; z-index:10;
-        background:rgba(11,15,23,.92); backdrop-filter: blur(10px);
-        border-bottom:1px solid var(--line);
-        padding:12px 14px;
-        display:flex; gap:10px; align-items:center; justify-content:space-between;
-      }
-      .brand{font-weight:700; letter-spacing:.08em}
-      .chips{display:flex; gap:8px; flex-wrap:wrap}
-      .chip{
-        border:1px solid var(--line); background:var(--card); color:var(--text);
-        padding:8px 10px; border-radius:999px; font-size:12px; cursor:pointer;
-        transition:transform .12s ease, border-color .12s ease;
-      }
-      .chip:hover{transform:translateY(-1px); border-color:rgba(122,162,255,.55)}
-      .chip.active{border-color:rgba(122,162,255,.9)}
-      .wrap{max-width:920px; margin:0 auto; padding:16px 14px 92px;}
-      .msg{padding:14px 14px; border:1px solid var(--line); background:var(--card); border-radius:16px; margin:10px 0; line-height:1.6}
-      .msg.user{border-color:rgba(122,255,200,.35)}
-      .msg.bot{border-color:rgba(122,162,255,.35)}
-      .meta{font-size:12px;color:var(--muted); margin-bottom:6px}
-      .inputbar{
-        position:fixed; left:0; right:0; bottom:0;
-        background:rgba(11,15,23,.92); backdrop-filter: blur(10px);
-        border-top:1px solid var(--line);
-        padding:12px 14px;
-      }
-      .inputwrap{max-width:920px; margin:0 auto; display:flex; gap:10px}
-      textarea{
-        flex:1; resize:none; height:54px; padding:12px 12px;
-        border-radius:14px; border:1px solid var(--line);
-        background:#0c1320; color:var(--text); outline:none;
-      }
-      button{
-        width:110px; border-radius:14px; border:1px solid rgba(122,162,255,.55);
-        background:linear-gradient(180deg, rgba(122,162,255,.20), rgba(122,162,255,.08));
-        color:var(--text); cursor:pointer; font-weight:700;
-        transition:transform .12s ease;
-      }
-      button:hover{transform:translateY(-1px)}
-      .row2{margin-top:10px; display:flex; gap:8px; flex-wrap:wrap}
-      .small{font-size:12px; color:var(--muted)}
-    </style>
-  </head>
-  <body>
-    <div class="topbar">
-      <div>
-        <div class="brand">HUB9</div>
-        <div class="small">Ta9 専用秘書（外でも使える）</div>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>HUB9</title>
+  <style>
+    :root{
+      --bg:#f7f3ee;
+      --card:#ffffff;
+      --text:#1f1f1f;
+      --muted:rgba(0,0,0,.55);
+      --hermes:#ff7a00;
+      --radius:18px;
+    }
+    body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";}
+    .wrap{max-width:720px;margin:0 auto;padding:14px 14px 90px;}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:0 10px 30px rgba(0,0,0,.06);padding:14px;}
+    .row{display:flex;gap:10px;align-items:center;}
+    .muted{color:var(--muted);font-size:13px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:14px;padding:12px 14px;border:0;cursor:pointer;touch-action:manipulation;}
+    .btn-primary{background:var(--hermes);color:#fff;box-shadow:0 10px 24px rgba(0,0,0,.12);font-weight:700;}
+    .nav{position:fixed;left:0;right:0;bottom:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.78);backdrop-filter: blur(10px);border-top:1px solid rgba(0,0,0,.06);}
+    .nav-inner{max-width:720px;margin:0 auto;display:flex;gap:10px;justify-content:space-between;}
+    .nav a{flex:1;text-align:center;text-decoration:none;color:rgba(0,0,0,.75);font-size:12px;padding:10px 8px;border-radius:16px;}
+    .nav a:active{transform:scale(.99);}
+    .nav a strong{display:block;font-size:18px;line-height:18px;margin-bottom:4px;}
+    .banner{border:1px solid rgba(255,122,0,.25);background:rgba(255,122,0,.10);border-radius:16px;padding:10px 12px;margin-bottom:10px;}
+    .hide{display:none;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <% latest = Notification.where(read_at: nil).order(created_at: :desc).first rescue nil %>
+    <% if latest %>
+      <div class="banner">
+        <div class="row" style="justify-content:space-between;">
+          <div>
+            <div style="font-weight:800;">通知</div>
+            <div class="muted"><%= latest.title %></div>
+          </div>
+          <a href="/notifications" class="btn" style="background:#fff;border:1px solid rgba(0,0,0,.08);">見る</a>
+        </div>
       </div>
-      <div class="chips" id="modeChips">
-        <div class="chip active" data-mode="default">秘書</div>
-        <div class="chip" data-mode="minutes">議事録</div>
-        <div class="chip" data-mode="progress">進捗</div>
-        <div class="chip" data-mode="morning">朝</div>
-        <div class="chip" data-mode="night">夜</div>
-      </div>
-    </div>
+    <% end %>
 
-    <div class="wrap" id="chat"></div>
-
-    <div class="inputbar">
-      <div class="inputwrap">
-        <textarea id="input" placeholder="例: /整理して 今日やることが散らかってる…  など"></textarea>
-        <button id="send">送信</button>
+    <div class="card">
+      <div class="row" style="justify-content:space-between;">
+        <div>
+          <div style="font-weight:900;font-size:20px;letter-spacing:.2px;">HUB9</div>
+          <div class="muted">Ta9専用・秘書寄り（ここから育てる）</div>
+        </div>
+        <button class="btn btn-primary" id="horseBtn" aria-label="horse">🐴</button>
       </div>
-      <div class="wrap" style="padding:10px 0 0;">
-        <div class="row2">
-          <div class="chip" id="btnMorning">☀️ 朝ブリーフ</div>
-          <div class="chip" id="btnNight">🌙 夜レビュー</div>
-          <div class="chip" id="btnSort">🧹 /整理して</div>
-          <div class="chip" id="btnDecide">🧠 /判断して</div>
+
+      <div style="margin-top:12px;">
+        <div class="muted">まずはここ：</div>
+        <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+          <a class="btn" href="/notifications" style="background:#fff;border:1px solid rgba(0,0,0,.08);">通知</a>
+          <a class="btn" href="/vault" style="background:#fff;border:1px solid rgba(0,0,0,.08);">B3</a>
         </div>
       </div>
     </div>
 
-    <script>
-      const chat = document.getElementById("chat");
-      const input = document.getElementById("input");
-      const send = document.getElementById("send");
-      const chips = document.getElementById("modeChips");
-      let mode = "default";
+    <div style="height:12px;"></div>
 
-      function addMsg(role, text, meta=""){
-        const div = document.createElement("div");
-        div.className = "msg " + (role === "user" ? "user" : "bot");
-        div.innerHTML = (meta ? `<div class="meta">${meta}</div>` : "") + `<div>${escapeHtml(text).replace(/\n/g,"<br>")}</div>`;
-        chat.appendChild(div);
-        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-      }
-      function escapeHtml(s){
-        return (s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-      }
+    <div class="card">
+      <div style="font-weight:800;">今日の一手</div>
+      <div class="muted" style="margin-top:6px;">「領収書」→「OCR」→「記録」 を最短で回す</div>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+        <a class="btn btn-primary" href="/vault" style="text-decoration:none;">B3へ</a>
+        <a class="btn" href="/notifications" style="background:#fff;border:1px solid rgba(0,0,0,.08);text-decoration:none;">通知</a>
+      </div>
+    </div>
+  </div>
 
-      chips.addEventListener("click", (e) => {
-        const chip = e.target.closest(".chip");
-        if(!chip) return;
-        document.querySelectorAll("#modeChips .chip").forEach(c => c.classList.remove("active"));
-        chip.classList.add("active");
-        mode = chip.dataset.mode;
-        addMsg("bot", `モード変更：${chip.textContent}`, "system");
-      });
+  <div class="nav">
+    <div class="nav-inner">
+      <a href="/" aria-label="home"><strong>🏠</strong>Home</a>
+      <a href="/vault" aria-label="ledger"><strong>🧾</strong>記録</a>
+      <a href="/vault" aria-label="receipt"><strong>📸</strong>レシート</a>
+      <a href="/vault" aria-label="card"><strong>💳</strong>名刺</a>
+      <a href="/notifications" aria-label="settings"><strong>⚙️</strong>設定</a>
+    </div>
+  </div>
 
-      async function postChat(message){
-        addMsg("user", message, "you");
-        const res = await fetch("/api/chat", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ message, mode })
-        });
-        const data = await res.json().catch(()=> ({}));
-        if(!res.ok){
-          addMsg("bot", `エラー: ${data.error || res.status}`, "error");
-          return;
-        }
-        addMsg("bot", data.reply || "", "assistant");
-      }
-
-      send.addEventListener("click", async () => {
-        const msg = input.value.trim();
-        if(!msg) return;
-        input.value = "";
-        await postChat(msg);
-      });
-
-      input.addEventListener("keydown", async (e) => {
-        if(e.key === "Enter" && !e.shiftKey){
-          e.preventDefault();
-          send.click();
-        }
-      });
-
-      // one-click buttons
-      document.getElementById("btnMorning").onclick = () => postChat("/朝");
-      document.getElementById("btnNight").onclick = () => postChat("/夜");
-      document.getElementById("btnSort").onclick = () => { input.value = "/整理して "; input.focus(); };
-      document.getElementById("btnDecide").onclick = () => { input.value = "/判断して "; input.focus(); };
-
-      // first message
-      addMsg("bot", "起動OK。『/整理して』か『朝ブリーフ』から入るのがおすすめ。", "assistant");
-    </script>
-  </body>
+  <script>
+    // 入口を隠したい場合：horseBtnを長押しで /vault に遷移、などに変更可
+    document.getElementById("horseBtn").addEventListener("click", () => {
+      window.location.href = "/vault";
+    });
+  </script>
+</body>
 </html>

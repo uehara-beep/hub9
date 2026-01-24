@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_24_011019) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_24_025912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -84,6 +84,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_24_011019) do
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "kind"
+    t.datetime "read_at"
+    t.string "title"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "receipts", force: :cascade do |t|
     t.integer "bucket"
     t.datetime "created_at", null: false
@@ -121,9 +130,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_24_011019) do
   create_table "vault_entries", force: :cascade do |t|
     t.integer "amount_yen"
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.integer "kind"
     t.text "memo"
     t.date "occurred_on"
+    t.date "purge_on"
+    t.datetime "purge_warned_at"
     t.string "tag"
     t.datetime "updated_at", null: false
   end
