@@ -1,0 +1,59 @@
+/* Contrast fix: light background + dark text (mobile-first safe override) */
+:root{
+  --hub-bg: #f5f3f0;         /* グレージュ */
+  --hub-text: #141414;       /* 文字色 */
+  --hub-muted: #4b4b4b;      /* 薄文字 */
+  --hub-line: rgba(0,0,0,.10);
+  --hub-card: rgba(255,255,255,.78);
+  --hub-accent: #ff7a00;     /* Hermes寄りオレンジ */
+}
+
+html, body{
+  background: var(--hub-bg) !important;
+  color: var(--hub-text) !important;
+}
+
+/* よくある "白文字指定" を強制解除 */
+body, p, span, div, label, small, h1, h2, h3, h4, h5, h6,
+a, button, input, textarea, select{
+  color: var(--hub-text) !important;
+}
+
+/* 薄い説明文 */
+.muted, .sub, .hint, .help, small, label{
+  color: var(--hub-muted) !important;
+}
+
+/* 左メニュー/サイド系（クラス名揺れに備えて広めに） */
+.sidebar, .side-menu, .nav-rail, .left-menu, .menu{
+  background: transparent !important;
+  color: var(--hub-text) !important;
+}
+
+/* ボタン・枠 */
+button, .btn, .pill, .tab, .menu a, .menu button, .sidebar a{
+  border-color: var(--hub-line) !important;
+}
+
+/* "選択中"っぽいハイライトはオレンジ枠に */
+.is-active, .active, .selected{
+  border-color: rgba(255,122,0,.55) !important;
+  box-shadow: 0 10px 24px rgba(255,122,0,.18) !important;
+}
+
+/* 入力欄（白地で見えるように） */
+input, textarea, select{
+  background: rgba(255,255,255,.92) !important;
+  border: 1px solid var(--hub-line) !important;
+  color: var(--hub-text) !important;
+}
+input::placeholder, textarea::placeholder{
+  color: rgba(0,0,0,.45) !important;
+}
+
+/* Hermesオレンジボタンは"黒文字"が映える */
+.horse-btn, .btn--accent, .accent, .primary{
+  background: var(--hub-accent) !important;
+  color: #111 !important;
+  border-color: rgba(0,0,0,.08) !important;
+}
