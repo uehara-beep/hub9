@@ -13,7 +13,8 @@ class Vault::EntriesController < ApplicationController
   def create
     @entry = VaultEntry.new(entry_params)
     if @entry.save
-      redirect_to vault_entries_path, notice: "保存しました"
+      VaultOcrJob.perform_later(@entry.id) if @entry.receipt.attached?
+      redirect_to vault_entry_path(@entry), notice: "保存しました"
     else
       render :new, status: :unprocessable_entity
     end

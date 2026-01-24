@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     post "ocr/receipt", to: "ocr#receipt"
     post "ocr/business_card", to: "ocr#business_card"
     post "vault/wipe_all", to: "vault_admin#wipe_all"
+    post "vault/ocr/:id", to: "vault_ocr#create", as: :vault_ocr
   end
   unless ENV["SECRET_KEY_BASE_DUMMY"]
     devise_for :users
