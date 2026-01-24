@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Vault / 裏帳簿</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "vault", "data-turbo-track": "reload" %>
+</head>
+<body class="vault-body">
+  <header class="vault-top">
+    <div class="vault-title">🐴 Vault / 裏帳簿</div>
+    <div class="vault-actions">
+      <a class="horse-btn" href="/vault/home" title="Vault Home">🏠</a>
+      <a class="horse-btn" href="<%= new_vault_entry_path %>" title="新規">＋</a>
+    </div>
+  </header>
+
+  <% if flash[:notice] %>
+    <div class="vault-toast"><%= flash[:notice] %></div>
+  <% end %>
+
+  <main class="vault-main">
+    <div class="vault-card">
+      <div class="vault-card-h">最新（最大300件）</div>
+
+      <% @entries.each do |e| %>
+        <a class="vault-row" href="<%= vault_entry_path(e) %>">
+          <div class="row-left">
+            <div class="row-date"><%= e.occurred_on %></div>
+            <div class="row-tag"><%= e.tag.presence || "—" %></div>
+            <div class="row-memo"><%= (e.memo || "").to_s.strip.first(60) %></div>
+          </div>
+          <div class="row-right">
+            <div class="row-kind <%= e.kind %>"><%= e.kind == "income" ? "IN" : "OUT" %></div>
+            <div class="row-amt">¥<%= number_with_delimiter(e.amount_yen.to_i) %></div>
+          </div>
+        </a>
+      <% end %>
+
+      <% if @entries.empty? %>
+        <div class="vault-empty">まだ記録がありません。右上の「＋」から追加。</div>
+      <% end %>
+    </div>
+  </main>
+</body>
+</html>

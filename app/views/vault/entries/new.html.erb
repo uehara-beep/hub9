@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Vault / 新規</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "vault", "data-turbo-track": "reload" %>
+</head>
+<body class="vault-body">
+  <header class="vault-top">
+    <div class="vault-title">🐴 新規記録</div>
+    <div class="vault-actions">
+      <a class="horse-btn" href="<%= vault_entries_path %>" title="戻る">←</a>
+    </div>
+  </header>
+
+  <main class="vault-main">
+    <div class="vault-card">
+      <%= form_with model: @entry, url: vault_entries_path, local: true, multipart: true do |f| %>
+
+        <% if @entry.errors.any? %>
+          <div class="vault-error">
+            <% @entry.errors.full_messages.each do |m| %>
+              <div>• <%= m %></div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <div class="field">
+          <label>日付</label>
+          <%= f.date_field :occurred_on %>
+        </div>
+
+        <div class="field">
+          <label>種別</label>
+          <%= f.select :kind, [["OUT(支出)", "expense"], ["IN(収入)", "income"]] %>
+        </div>
+
+        <div class="field">
+          <label>金額（円）</label>
+          <%= f.number_field :amount_yen, inputmode: "numeric", placeholder: "例: 12000" %>
+        </div>
+
+        <div class="field">
+          <label>タグ</label>
+          <%= f.text_field :tag, placeholder: "例: へそくり / 交際費 / 現金" %>
+        </div>
+
+        <div class="field">
+          <label>メモ</label>
+          <%= f.text_area :memo, rows: 4, placeholder: "一言メモ（任意）" %>
+        </div>
+
+        <div class="field">
+          <label>領収書（写メ）</label>
+          <%= f.file_field :receipt, accept: "image/*", capture: "environment" %>
+          <div class="hint">※ 写メしてそのまま添付できます</div>
+        </div>
+
+        <button class="vault-primary" type="submit">保存</button>
+      <% end %>
+    </div>
+  </main>
+</body>
+</html>

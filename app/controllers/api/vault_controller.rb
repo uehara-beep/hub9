@@ -5,6 +5,7 @@ class Api::VaultController < ApplicationController
     pin = params[:pin].to_s
     ok  = ActiveSupport::SecurityUtils.secure_compare(pin, (ENV["VAULT_PIN"] || ""))
 
+    vault_unlock! if ok
     render json: { ok: ok }
   end
 end

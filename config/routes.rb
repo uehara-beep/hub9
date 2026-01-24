@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  namespace :vault do
+    resources :entries, only: [:index, :new, :create, :show, :destroy]
+  end
   get "/vault", to: "vault#index"
   get "/vault/home", to: "vault#home"
   namespace :api do

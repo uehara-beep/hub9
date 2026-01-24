@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Vault / 詳細</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "vault", "data-turbo-track": "reload" %>
+</head>
+<body class="vault-body">
+  <header class="vault-top">
+    <div class="vault-title">🐴 詳細</div>
+    <div class="vault-actions">
+      <a class="horse-btn" href="<%= vault_entries_path %>" title="戻る">←</a>
+    </div>
+  </header>
+
+  <main class="vault-main">
+    <div class="vault-card">
+      <div class="vault-card-h">記録内容</div>
+
+      <div class="detail-row">
+        <div class="detail-label">日付</div>
+        <div class="detail-value"><%= @entry.occurred_on %></div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">種別</div>
+        <div class="detail-value">
+          <span class="row-kind <%= @entry.kind %>"><%= @entry.kind == "income" ? "IN（収入）" : "OUT（支出）" %></span>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">金額</div>
+        <div class="detail-value detail-amt">¥<%= number_with_delimiter(@entry.amount_yen.to_i) %></div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">タグ</div>
+        <div class="detail-value"><%= @entry.tag.presence || "—" %></div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">メモ</div>
+        <div class="detail-value detail-memo"><%= @entry.memo.presence || "—" %></div>
+      </div>
+
+      <% if @entry.receipt.attached? %>
+        <div class="detail-row">
+          <div class="detail-label">領収書</div>
+          <div class="detail-value">
+            <%= image_tag @entry.receipt, class: "receipt-img" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="vault-card danger-zone">
+      <div class="vault-card-h">操作</div>
+      <%= button_to "この記録を削除", vault_entry_path(@entry), method: :delete, class: "vault-danger", data: { confirm: "本当に削除しますか？" } %>
+    </div>
+  </main>
+</body>
+</html>

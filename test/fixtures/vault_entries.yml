@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  occurred_on: 2026-01-24
+  kind: 1
+  amount_yen: 1
+  tag: MyString
+  memo: MyText
+
+two:
+  occurred_on: 2026-01-24
+  kind: 1
+  amount_yen: 1
+  tag: MyString
+  memo: MyText
