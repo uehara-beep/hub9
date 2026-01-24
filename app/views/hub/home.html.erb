@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>HUB9</title>
+  <style>
+    :root {
+      --bg: #f6f3ef;
+      --card: #fff;
+      --text: #1a1a1a;
+      --muted: #666;
+      --hermes: #ff7a00;
+      --green: #27ae60;
+      --red: #c0392b;
+      --safe: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+      min-height: 100vh;
+      padding-bottom: calc(80px + var(--safe));
+    }
+
+    /* Header */
+    .header {
+      background: var(--hermes);
+      color: #fff;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-title {
+      font-size: 22px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header-icon {
+      font-size: 28px;
+    }
+
+    /* Main */
+    .main {
+      padding: 16px;
+    }
+
+    /* Menu */
+    .menu {
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(0,0,0,.06);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid #eee;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .menu-item:last-child { border-bottom: none; }
+    .menu-item:active { background: #f5f5f5; }
+    .menu-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--hermes);
+      margin-right: 12px;
+    }
+    .menu-arrow {
+      margin-left: auto;
+      color: var(--muted);
+    }
+
+    /* Balance Card */
+    .balance-card {
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(0,0,0,.06);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .balance-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .balance-amount {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--hermes);
+    }
+    .balance-amount.negative { color: var(--red); }
+    .balance-amount.positive { color: var(--green); }
+
+    /* Today */
+    .today-card {
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(0,0,0,.06);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .today-header {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .today-empty {
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+      padding: 16px 0;
+    }
+    .today-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+    .today-item:last-child { border-bottom: none; }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .quick-btn {
+      flex: 1;
+      padding: 16px;
+      border-radius: 16px;
+      border: none;
+      font-size: 18px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .quick-btn.in {
+      background: #e8f5e9;
+      color: var(--green);
+      border: 2px solid var(--green);
+    }
+    .quick-btn.out {
+      background: #ffebee;
+      color: var(--red);
+      border: 2px solid var(--red);
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid #eee;
+      padding: 8px 16px calc(8px + var(--safe));
+      display: flex;
+      justify-content: space-around;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 10px;
+      padding: 4px 12px;
+    }
+    .nav-item.active { color: var(--hermes); }
+    .nav-icon { font-size: 24px; margin-bottom: 2px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-title">
+      <span class="header-icon">🐴</span>
+      HUB9
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Menu -->
+    <nav class="menu">
+      <% @menus.each do |m| %>
+        <a class="menu-item" href="<%= m[:path] %>">
+          <span class="menu-dot"></span>
+          <%= m[:label] %>
+          <span class="menu-arrow">›</span>
+        </a>
+      <% end %>
+    </nav>
+
+    <!-- Balance -->
+    <div class="balance-card">
+      <div class="balance-label">今月の裏残高</div>
+      <div class="balance-amount <%= @vault_balance >= 0 ? 'positive' : 'negative' %>">
+        ¥ <%= number_with_delimiter(@vault_balance.abs) %>
+        <% if @vault_balance < 0 %>−<% end %>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <a class="quick-btn in" href="/vault/entries/new?kind=income">
+        ＋ IN
+      </a>
+      <a class="quick-btn out" href="/vault/entries/new?kind=expense">
+        − OUT
+      </a>
+    </div>
+
+    <!-- Today -->
+    <div class="today-card">
+      <div class="today-header">
+        📋 今日の記録
+      </div>
+      <% if @today_entries.empty? %>
+        <div class="today-empty">まだ記録がありません</div>
+      <% else %>
+        <% @today_entries.each do |e| %>
+          <div class="today-item">
+            <span><%= e.tag.presence || e.memo.to_s.truncate(20) || "—" %></span>
+            <span style="color: <%= e.kind_expense? ? 'var(--red)' : 'var(--green)' %>">
+              <%= e.kind_expense? ? "−" : "＋" %>¥<%= number_with_delimiter(e.amount_yen) %>
+            </span>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <a class="nav-item active" href="/">
+      <span class="nav-icon">🏠</span>
+      Home
+    </a>
+    <a class="nav-item" href="/vault/entries">
+      <span class="nav-icon">🧾</span>
+      記録
+    </a>
+    <a class="nav-item" href="/vault/entries/new">
+      <span class="nav-icon">📸</span>
+      追加
+    </a>
+    <a class="nav-item" href="/notifications">
+      <span class="nav-icon">🔔</span>
+      通知
+    </a>
+  </nav>
+</body>
+</html>
