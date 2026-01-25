@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_24_134731) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_25_100002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,6 +53,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_24_134731) do
     t.index ["user_id"], name: "index_business_cards_on_user_id"
   end
 
+  create_table "charge_entries", force: :cascade do |t|
+    t.integer "amount_yen"
+    t.string "category"
+    t.string "counterparty"
+    t.datetime "created_at", null: false
+    t.integer "direction"
+    t.text "note"
+    t.date "occurred_on"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "conversations", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "mode"
@@ -69,6 +80,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_24_134731) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_id"], name: "index_daily_contexts_on_user_id"
+  end
+
+  create_table "hyper_secretary_messages", force: :cascade do |t|
+    t.integer "amount_yen"
+    t.string "category"
+    t.integer "charge_entry_id"
+    t.text "content"
+    t.string "counterparty"
+    t.datetime "created_at", null: false
+    t.integer "direction"
+    t.jsonb "extracted"
+    t.string "kind"
+    t.string "role"
+    t.datetime "updated_at", null: false
+    t.index ["charge_entry_id"], name: "index_hyper_secretary_messages_on_charge_entry_id"
   end
 
   create_table "messages", force: :cascade do |t|

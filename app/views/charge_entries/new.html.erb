@@ -1,0 +1,30 @@
+<div class="charge-wrap">
+  <div class="charge-head">
+    <h1>💰 Charge 登録</h1>
+    <a class="ghost-btn" href="<%= charge_entries_path %>">一覧</a>
+  </div>
+
+  <%= form_with model: @entry do |f| %>
+    <div class="card">
+      <label>区分</label>
+      <div class="seg">
+        <%= f.radio_button :direction, 0, checked: true %><span>受取</span>
+        <%= f.radio_button :direction, 1 %><span>支払</span>
+      </div>
+
+      <label>金額（円）</label>
+      <%= f.number_field :amount_yen, inputmode: "numeric", placeholder: "例: 12000" %>
+
+      <label>相手（任意）</label>
+      <%= f.text_field :counterparty, placeholder: "例: 田中 / 銀行 / コンビニ" %>
+
+      <label>カテゴリ</label>
+      <%= f.select :category, ["交通費","飲食","立替","雑","その他"], include_blank: "選択" %>
+
+      <label>メモ（任意）</label>
+      <%= f.text_area :note, rows: 3, placeholder: "例: 〇〇の立替 / 返済 / チャージ" %>
+
+      <button class="horse-primary">記録する</button>
+    </div>
+  <% end %>
+</div>

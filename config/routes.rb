@@ -22,6 +22,14 @@ Rails.application.routes.draw do
   get "/notifications", to: "notifications#index"
   get "/notifications/:id/read", to: "notifications#read", as: :read_notification
 
+  # Charge entries
+  resources :charge_entries, only: [:index, :new, :create]
+
+  # Hub Secretary
+  namespace :hub do
+    get "/secretary", to: "secretary#show"
+  end
+
   namespace :api do
     get "health", to: "health#index"
     post "chat", to: "chat#create"
@@ -30,6 +38,7 @@ Rails.application.routes.draw do
     post "ocr/business_card", to: "ocr#business_card"
     post "vault/wipe_all", to: "vault_admin#wipe_all"
     post "vault/ocr/:id", to: "vault_ocr#create", as: :vault_ocr
+    post "secretary", to: "secretary#create"
   end
   unless ENV["SECRET_KEY_BASE_DUMMY"]
     devise_for :users

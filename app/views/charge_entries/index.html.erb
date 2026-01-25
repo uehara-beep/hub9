@@ -1,0 +1,27 @@
+<div class="charge-wrap">
+  <div class="charge-head">
+    <h1>💰 Charge</h1>
+    <a class="horse-btn" href="<%= new_charge_entry_path %>">+</a>
+  </div>
+
+  <div class="charge-list">
+    <% @entries.each do |e| %>
+      <div class="charge-item">
+        <div class="charge-row">
+          <div class="badge <%= e.direction.to_i == 0 ? "in" : "out" %>">
+            <%= e.direction.to_i == 0 ? "受取" : "支払" %>
+          </div>
+          <div class="amount">¥<%= number_with_delimiter(e.amount_yen.to_i) %></div>
+        </div>
+        <div class="meta">
+          <span class="cat"><%= e.category.presence || "その他" %></span>
+          <% if e.counterparty.present? %><span class="cp">・<%= e.counterparty %></span><% end %>
+          <span class="date">・<%= (e.occurred_on || e.created_at.to_date).strftime("%m/%d") %></span>
+        </div>
+        <% if e.note.present? %>
+          <div class="note"><%= e.note %></div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
