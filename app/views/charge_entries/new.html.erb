@@ -8,8 +8,8 @@
     <div class="card">
       <label>区分</label>
       <div class="seg">
-        <%= f.radio_button :direction, 0, checked: true %><span>受取</span>
-        <%= f.radio_button :direction, 1 %><span>支払</span>
+        <%= f.radio_button :direction, :incoming, checked: @entry.direction_incoming? || @entry.direction.nil? %><span>受取</span>
+        <%= f.radio_button :direction, :outgoing, checked: @entry.direction_outgoing? %><span>支払</span>
       </div>
 
       <label>金額（円）</label>

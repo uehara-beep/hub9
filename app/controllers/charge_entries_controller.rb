@@ -8,12 +8,6 @@ class ChargeEntriesController < ApplicationController
     @entry = ChargeEntry.new(entry_params)
     @entry.occurred_on ||= Date.current
 
-    # directionが "0"/"1" で来ても落ちないように吸収
-    raw = params.dig(:charge_entry, :direction).to_s
-    if raw.match?(/\A[01]\z/)
-      @entry.direction = (raw == "0" ? :incoming : :outgoing)
-    end
-
     if @entry.save
       redirect_to charge_entries_path, notice: "記録しました"
     else

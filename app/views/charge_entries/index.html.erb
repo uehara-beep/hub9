@@ -8,8 +8,8 @@
     <% @entries.each do |e| %>
       <div class="charge-item">
         <div class="charge-row">
-          <div class="badge <%= e.direction.to_i == 0 ? "in" : "out" %>">
-            <%= e.direction.to_i == 0 ? "受取" : "支払" %>
+          <div class="badge <%= e.direction_incoming? ? "in" : "out" %>">
+            <%= e.direction_incoming? ? "受取" : "支払" %>
           </div>
           <div class="amount">¥<%= number_with_delimiter(e.amount_yen.to_i) %></div>
         </div>
