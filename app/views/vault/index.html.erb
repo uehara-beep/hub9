@@ -1,55 +1,41 @@
-<div class="vault-shell vault-bg">
-  <div class="vault-stage">
-    <div class="vault-top">
-      <h1>🐴 Vault</h1>
-      <div class="pin-hint">外に出せない記録（へそくり/領収書）</div>
-    </div>
-
-    <div class="vault-actions vault-card pin-wrap"
-         data-controller="vault-pin"
-         data-vault-pin-length-value="4">
-      <div class="pin-title">PIN</div>
-
-      <div class="pin-dots" aria-label="PIN dots">
-        <div class="pin-dot" data-vault-pin-target="dot"></div>
-        <div class="pin-dot" data-vault-pin-target="dot"></div>
-        <div class="pin-dot" data-vault-pin-target="dot"></div>
-        <div class="pin-dot" data-vault-pin-target="dot"></div>
-      </div>
-
-      <input type="password"
-             inputmode="numeric"
-             autocomplete="one-time-code"
-             class="sr-only"
-             data-vault-pin-target="input" />
-
-      <div class="pin-pad">
-        <% (1..9).each do |n| %>
-          <button type="button"
-                  class="pin-btn"
-                  data-action="click->vault-pin#press"
-                  data-digit="<%= n %>"><%= n %></button>
-        <% end %>
-
-        <button type="button"
-                class="pin-btn ghost"
-                data-action="click->vault-pin#backspace">⌫</button>
-
-        <button type="button"
-                class="pin-btn"
-                data-action="click->vault-pin#press"
-                data-digit="0">0</button>
-
-        <button type="button"
-                class="pin-btn primary"
-                data-action="click->vault-pin#submit">OK</button>
-      </div>
-
-      <div class="pin-hint">数字をタップ → OK</div>
-
-      <% if flash[:alert].present? %>
-        <div class="vault-alert"><%= flash[:alert] %></div>
-      <% end %>
-    </div>
+<div class="vault-pin" data-controller="vault-pin">
+  <div class="vault-pin__head">
+    <div class="vault-pin__title">🐴 Vault</div>
+    <div class="vault-pin__sub">外に出せない記録（へそくり/領収書）</div>
   </div>
+
+  <%= form_with url: "/api/vault/unlock", method: :post, class: "vault-pin__form" do %>
+    <input
+      type="password"
+      inputmode="numeric"
+      autocomplete="one-time-code"
+      maxlength="4"
+      class="vault-pin__input"
+      placeholder="PIN（4桁）"
+      data-vault-pin-target="field"
+      name="pin"
+    />
+
+    <div class="vault-pin__pad">
+      <% [1,2,3,4,5,6,7,8,9].each do |n| %>
+        <button
+          type="button"
+          class="vault-pin__key"
+          data-val="<%= n %>"
+          data-action="click->vault-pin#tap touchstart->vault-pin#touch"
+        ><%= n %></button>
+      <% end %>
+
+      <button type="button" class="vault-pin__key vault-pin__key--muted"
+        data-val="clr" data-action="click->vault-pin#tap touchstart->vault-pin#touch">C</button>
+
+      <button type="button" class="vault-pin__key"
+        data-val="0" data-action="click->vault-pin#tap touchstart->vault-pin#touch">0</button>
+
+      <button type="button" class="vault-pin__key vault-pin__key--muted"
+        data-val="del" data-action="click->vault-pin#tap touchstart->vault-pin#touch">⌫</button>
+    </div>
+
+    <div class="vault-pin__hint">※数字キーが反応しない端末対策でタップ/タッチ両対応</div>
+  <% end %>
 </div>

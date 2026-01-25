@@ -1,67 +1,47 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["dot", "input"]
-  static values = { length: Number }
+  static targets = ["field"]
 
   connect() {
     this.pin = ""
-    this.render()
+    this.max = 4
   }
 
-  press(e) {
-    const d = e.currentTarget.dataset.digit
-    if (!d) return
-    if (this.pin.length >= this.lengthValue) return
-    this.pin += d
-    this.render()
-  }
+  tap(e) {
+    const val = e.currentTarget.dataset.val
+    if (!val) return
 
-  backspace() {
-    this.pin = this.pin.slice(0, -1)
-    this.render()
-  }
-
-  async submit() {
-    if (this.pin.length !== this.lengthValue) return
-
-    try {
-      const res = await fetch("/api/vault/unlock", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({ pin: this.pin })
-      })
-
-      if (!res.ok) throw new Error("PINが違うか、通信エラーです")
-
-      window.location.href = "/vault/home"
-    } catch (err) {
-      this.shake()
+    if (val === "del") {
+      this.pin = this.pin.slice(0, -1)
+      this.render()
+      return
+    }
+    if (val === "clr") {
       this.pin = ""
       this.render()
-      alert(err.message)
+      return
     }
+    if (this.pin.length >= this.max) return
+
+    this.pin += val
+    this.render()
+
+    // 4桁になったら自動でsubmit（フォームがあれば）
+    if (this.pin.length === this.max) {
+      const form = this.element.closest("form")
+      if (form) form.requestSubmit()
+    }
+  }
+
+  // iOS対策：touchstart -> tap を確実に通す
+  touch(e) {
+    e.preventDefault()
+    this.tap(e)
   }
 
   render() {
-    if (this.hasInputTarget) {
-      this.inputTarget.value = this.pin
-    }
-    this.dotTargets.forEach((el, i) => {
-      el.classList.toggle("filled", i < this.pin.length)
-    })
-  }
-
-  shake() {
-    this.element.animate(
-      [{ transform: "translateX(0px)" },
-       { transform: "translateX(-8px)" },
-       { transform: "translateX(8px)" },
-       { transform: "translateX(0px)" }],
-      { duration: 220 }
-    )
+    if (!this.hasFieldTarget) return
+    this.fieldTarget.value = this.pin
   }
 }

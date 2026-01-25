@@ -14,6 +14,71 @@ body{
   color: var(--ink);
 }
 
+/* --- New PIN UI --- */
+.vault-pin{
+  min-height:100svh;
+  padding:28px 18px;
+  background:#f5f3f0;
+  color:#111;
+}
+
+.vault-pin__head{ text-align:center; margin: 24px 0 18px; }
+.vault-pin__title{ font-size:28px; font-weight:800; letter-spacing:.02em; }
+.vault-pin__sub{ margin-top:6px; opacity:.7; }
+
+.vault-pin__form{ max-width:420px; margin:0 auto; }
+
+.vault-pin__input{
+  width:100%;
+  font-size:20px;
+  padding:16px 14px;
+  border-radius:16px;
+  border:1px solid rgba(0,0,0,.10);
+  background:#fff;
+  outline:none;
+}
+
+.vault-pin__pad{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:12px;
+
+  /* "押せない"系を殺す三点セット */
+  position:relative;
+  z-index:10;
+  pointer-events:auto;
+}
+
+.vault-pin__key{
+  height:56px;
+  border-radius:18px;
+  border:1px solid rgba(0,0,0,.08);
+  background:#fff;
+  font-size:22px;
+  font-weight:800;
+  box-shadow:0 10px 24px rgba(0,0,0,.08);
+
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  pointer-events:auto;
+}
+
+.vault-pin__key:active{ transform: scale(.98); }
+
+.vault-pin__key--muted{
+  background:rgba(0,0,0,.04);
+}
+
+.vault-pin__hint{
+  margin-top:14px;
+  text-align:center;
+  font-size:12px;
+  opacity:.65;
+}
+
 /* --- 背景の"膜"はタップを邪魔しない --- */
 .vault-bg,
 .vault-bg::before,
@@ -44,7 +109,7 @@ body{
   backdrop-filter: blur(10px);
 }
 
-/* --- PIN UI --- */
+/* --- Old PIN UI (kept for compatibility) --- */
 .pin-wrap{
   display:flex;
   flex-direction:column;
