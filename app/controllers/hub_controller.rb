@@ -1,9 +1,24 @@
 class HubController < ApplicationController
-  before_action :authenticate_user!
+  # ta9ログインを使用（Devise不要）
+
+  private
+
+  # Deviseの代わりにta9ユーザーを返す
+  def current_user
+    @current_user ||= User.find_or_create_by!(email: "ta9@hub9.local") do |u|
+      u.password = SecureRandom.hex(16) if u.respond_to?(:password=)
+    end
+  end
+
+  public
 
   def index
-    @purge_warning = current_user.vault_entries.deletion_notice.exists?
-    @current_balance = current_user.vault_entries.this_month.calculate_balance
+    # シンプルなメニュー構成
+    @menus = [
+      { label: "🤵 秘書", path: hub_secretary_path },
+      { label: "💰 Charge", path: charge_entries_path }
+    ]
+    @today_entries = ChargeEntry.where(occurred_on: Date.current).order(created_at: :desc).limit(5)
   end
 
   def secretary

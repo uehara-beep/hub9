@@ -218,48 +218,19 @@
       <% end %>
     </nav>
 
-    <!-- Purge Warning -->
-    <% if @purge_warning_count && @purge_warning_count > 0 %>
-      <div class="purge-warning">
-        ⚠️ <%= @purge_warning_count %>件が30日以内に自動削除されます
-      </div>
-    <% end %>
-
-    <!-- Balance -->
-    <div class="balance-card">
-      <div class="balance-label">今月のへそくり残高</div>
-      <div class="balance-amount <%= @vault_balance >= 0 ? 'positive' : 'negative' %>">
-        ¥ <%= number_with_delimiter(@vault_balance.abs) %>
-        <% if @vault_balance < 0 %>−<% end %>
-      </div>
-    </div>
-
-    <!-- Quick Actions: Charge IN / OUT / 立替 -->
-    <div class="quick-actions">
-      <a class="quick-btn in" href="/vault/transfer?kind=in">
-        ＋ IN
-      </a>
-      <a class="quick-btn out" href="/vault/transfer?kind=out">
-        − OUT
-      </a>
-      <a class="quick-btn neutral" href="/vault/transfer?category=立替">
-        💸 立替
-      </a>
-    </div>
-
-    <!-- Today (新しい順) -->
+    <!-- Today's Charge (新しい順) -->
     <div class="today-card">
       <div class="today-header">
-        📋 今日の記録（新しい順）
+        📋 今日のCharge
       </div>
-      <% if @today_entries.empty? %>
+      <% if @today_entries.blank? %>
         <div class="today-empty">まだ記録がありません</div>
       <% else %>
         <% @today_entries.each do |e| %>
           <div class="today-item">
-            <span><%= e.tag.presence || e.memo.to_s.truncate(20) || "—" %></span>
-            <span style="color: <%= e.kind_expense? ? 'var(--red)' : 'var(--green)' %>">
-              <%= e.kind_expense? ? "− OUT" : "＋ IN" %> ¥<%= number_with_delimiter(e.amount_yen) %>
+            <span><%= e.counterparty.presence || e.category.presence || "—" %></span>
+            <span style="color: <%= e.direction_outgoing? ? 'var(--red)' : 'var(--green)' %>">
+              <%= e.direction_outgoing? ? "− 支払" : "＋ 受取" %> ¥<%= number_with_delimiter(e.amount_yen.to_i) %>
             </span>
           </div>
         <% end %>
@@ -272,17 +243,13 @@
       <span class="nav-icon">🏠</span>
       Home
     </a>
-    <a class="nav-item" href="/vault/entries">
-      <span class="nav-icon">🧾</span>
-      履歴
+    <a class="nav-item" href="<%= hub_secretary_path %>">
+      <span class="nav-icon">🤵</span>
+      秘書
     </a>
-    <a class="nav-item" href="/vault/transfer">
+    <a class="nav-item" href="<%= charge_entries_path %>">
       <span class="nav-icon">💰</span>
       Charge
-    </a>
-    <a class="nav-item" href="/notifications">
-      <span class="nav-icon">🔔</span>
-      通知
     </a>
   </nav>
 </body>

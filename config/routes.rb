@@ -6,7 +6,8 @@ Rails.application.routes.draw do
 
   root "hub#index"
   get  "/hub", to: "hub#index"
-  post "/hub/send", to: "hub#send_message"
+  get  "/hub/secretary", to: "hub#secretary", as: :hub_secretary
+  post "/hub/send", to: "hub#send_message", as: :hub_send_message
 
   namespace :vault do
     resources :entries, only: [:index, :new, :create, :show, :destroy]
