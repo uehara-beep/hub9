@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  # Auth routes
+  get    "/login",  to: "auth#login",  as: :login
+  post   "/login",  to: "auth#create"
+  delete "/logout", to: "auth#logout", as: :logout
+
   root "hub#index"
   get  "/hub", to: "hub#index"
   post "/hub/send", to: "hub#send_message"

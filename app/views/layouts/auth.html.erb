@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>HUB9 - Login</title>
+  <style>
+    :root {
+      --hermes: #ff7a00;
+      --bg: #f6f3ef;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+      min-height: 100vh;
+    }
+    .login-wrap {
+      max-width: 360px;
+      margin: 15vh auto;
+      padding: 20px;
+      text-align: center;
+    }
+    .login-wrap h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--hermes);
+      margin-bottom: 32px;
+    }
+    .login-wrap h1::before {
+      content: "🐴 ";
+    }
+    input, button {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 12px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      -webkit-appearance: none;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--hermes);
+    }
+    input[readonly] {
+      background: #f0f0f0;
+      color: #666;
+    }
+    button {
+      background: var(--hermes);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    .error {
+      color: #c0392b;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <%= yield %>
+</body>
+</html>

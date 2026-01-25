@@ -1,0 +1,13 @@
+<div class="login-wrap">
+  <h1>HUB9</h1>
+
+  <%= form_with url: "/login", method: :post, local: true do %>
+    <input name="login_id" value="ta9" readonly>
+    <input type="password" name="password" placeholder="パスワード" autofocus>
+    <button type="submit">ログイン</button>
+  <% end %>
+
+  <% if flash[:alert] %>
+    <p class="error"><%= flash[:alert] %></p>
+  <% end %>
+</div>
