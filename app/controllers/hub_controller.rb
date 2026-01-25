@@ -1,100 +1,154 @@
 class HubController < ApplicationController
-  # メイン入口は「秘書」と「Charge（裏）」
-  MENUS = [
-    { key: "secretary", label: "🤵 秘書", path: "/hub?mode=A" },
-    { key: "vault", label: "💰 Charge（裏）", path: "/vault" }
-  ].freeze
-
-  # 表示するモードは秘書のみ、他はURL直打ち可
-  MODES = [
-    { key: "A", label: "秘書" }
-  ].freeze
-
-  # 裏モード（URL直打ち用）
-  HIDDEN_MODES = [
-    { key: "B", label: "議事録" },
-    { key: "C", label: "進捗" },
-    { key: "D", label: "朝" },
-    { key: "E", label: "夜" }
-  ].freeze
+  before_action :authenticate_user!
 
   def index
-    @menus = MENUS
-    @modes = MODES
+    @purge_warning = current_user.vault_entries.deletion_notice.exists?
+    @current_balance = current_user.vault_entries.this_month.calculate_balance
+  end
 
-    if params[:mode].present?
-      @mode = params[:mode]
-      all_modes = MODES + HIDDEN_MODES
-      mode_info = all_modes.find { |m| m[:key] == @mode }
-      @modes = [mode_info].compact.presence || MODES
-
-      session[:hub_mode] = @mode
-      @conversation = Conversation.find_or_create_by!(mode: @mode)
-      @messages = @conversation.messages.order(:id).last(50)
-      render :chat
-    else
-      @vault_balance = calculate_vault_balance
-      @today_entries = vault_today_entries
-      @purge_warning_count = purge_warning_count
-      render :home
-    end
+  def secretary
+    # 秘書画面（新しい順）
+    @messages = current_user.hyper_secretary_messages
+                            .order(created_at: :desc)
+                            .limit(100)
   end
 
   def send_message
-    mode = params[:mode].presence || session[:hub_mode].presence || "A"
-    session[:hub_mode] = mode
-    conv = Conversation.find_or_create_by!(mode: mode)
-
-    user_text = params[:text].to_s.strip
-    return redirect_to hub_path(mode: mode) if user_text.blank?
-
-    conv.messages.create!(role: "user", content: user_text)
-
-    # Use HyperSecretary AI if available
     begin
-      ai = Hub9::AiChat.new(mode_label: mode_label_for(mode))
-      history = conv.messages.order(:id).last(12).map { |m| { role: m.role, content: m.content } }
-      is_record = Hub9::HyperSecretary.record_intent?(user_text)
-      temperature = is_record ? 0.2 : 0.8
-      assistant_text = ai.call(messages: history, temperature: temperature)
-    rescue => e
-      Rails.logger.error("[HubController] AI error: #{e.message}")
-      assistant_text = "通信エラーが発生しました。もう一度お試しください。"
-    end
+      Rails.logger.info("=== send_message START ===")
+      Rails.logger.info("Params: #{params.inspect}")
 
-    conv.messages.create!(role: "assistant", content: assistant_text)
-    redirect_to hub_path(mode: mode)
+      # 画像アップロード処理
+      image_url = nil
+      if params[:image].present?
+        Rails.logger.info("Image upload START")
+        uploaded_file = params[:image]
+        filename = "#{SecureRandom.uuid}_#{uploaded_file.original_filename}"
+        filepath = Rails.root.join('public', 'uploads', filename)
+        FileUtils.mkdir_p(File.dirname(filepath))
+        File.open(filepath, 'wb') do |file|
+          file.write(uploaded_file.read)
+        end
+        image_url = "/uploads/#{filename}"
+        Rails.logger.info("Image uploaded: #{image_url}")
+      end
+
+      # メッセージ内容の確認
+      message_content = params[:message].presence || (image_url.present? ? "[画像]" : nil)
+      
+      if message_content.blank? && image_url.blank?
+        Rails.logger.warn("Empty message and no image")
+        redirect_to hub_secretary_path, alert: "メッセージまたは画像を入力してください"
+        return
+      end
+
+      # ユーザーメッセージを保存
+      Rails.logger.info("Creating user message: #{message_content}")
+      user_message = current_user.hyper_secretary_messages.create!(
+        content: message_content,
+        role: 'user',
+        image_url: image_url
+      )
+      Rails.logger.info("User message created: #{user_message.id}")
+
+      # AI API呼び出し
+      Rails.logger.info("Calling AI API")
+      response = call_ai_api(message_content, params[:model] || 'claude-sonnet-4.5', image_url)
+      Rails.logger.info("AI response: #{response[:message][0..100]}...")
+
+      # AI返信を保存
+      Rails.logger.info("Creating assistant message")
+      assistant_message = current_user.hyper_secretary_messages.create!(
+        content: response[:message],
+        role: 'assistant',
+        metadata: response[:metadata]
+      )
+      Rails.logger.info("Assistant message created: #{assistant_message.id}")
+
+      # 秘書画面にリダイレクト
+      Rails.logger.info("=== send_message SUCCESS ===")
+      redirect_to hub_secretary_path, notice: "送信しました"
+      
+    rescue StandardError => e
+      Rails.logger.error("=== send_message ERROR ===")
+      Rails.logger.error("Error: #{e.message}")
+      Rails.logger.error("Backtrace: #{e.backtrace.join("\n")}")
+      redirect_to hub_secretary_path, alert: "エラーが発生しました: #{e.message}"
+    end
   end
 
   private
 
-  def mode_label_for(key)
-    all = MODES + HIDDEN_MODES
-    all.find { |m| m[:key] == key }&.fetch(:label, "秘書") || "秘書"
+  def call_ai_api(message, model, image_url = nil)
+    # メモリコンテキストを取得
+    memory = HyperSecretaryMessage.get_memory_context(current_user, limit: 10)
+
+    case model
+    when 'gpt-4o'
+      call_openai_api(message, memory, image_url)
+    else
+      call_anthropic_api(message, memory, image_url)
+    end
   end
 
-  def calculate_vault_balance
-    return 0 unless defined?(VaultEntry)
+  def call_anthropic_api(message, memory, image_url = nil)
+    # メッセージコンテンツを構築
+    content = []
+    
+    # 画像がある場合
+    if image_url.present?
+      image_path = Rails.root.join('public', image_url.gsub(/^\//, ''))
+      if File.exist?(image_path)
+        image_data = Base64.strict_encode64(File.read(image_path))
+        
+        content << {
+          type: "image",
+          source: {
+            type: "base64",
+            media_type: "image/jpeg",
+            data: image_data
+          }
+        }
+      end
+    end
+    
+    # テキストメッセージ
+    if message.present?
+      content << {
+        type: "text",
+        text: message
+      }
+    end
 
-    month_start = Date.today.beginning_of_month
-    month_end = Date.today.end_of_month
+    api_response = HTTParty.post(
+      "https://api.anthropic.com/v1/messages",
+      headers: {
+        "x-api-key" => ENV['ANTHROPIC_API_KEY'],
+        "anthropic-version" => "2023-06-01",
+        "content-type" => "application/json"
+      },
+      body: {
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1024,
+        system: "あなたは有能な秘書です。ユーザーの指示を記憶し、適切に対応してください。",
+        messages: [
+          *memory,
+          { role: "user", content: content }
+        ]
+      }.to_json,
+      timeout: 30
+    )
 
-    entries = VaultEntry.where(occurred_on: month_start..month_end)
-    income = entries.where(kind: :income).sum(:amount_yen)
-    expense = entries.where(kind: :expense).sum(:amount_yen)
-    income - expense
+    if api_response.success?
+      content = api_response['content'][0]['text']
+      { message: content, metadata: { model: 'claude-sonnet-4.5' } }
+    else
+      raise "API Error: #{api_response.code} - #{api_response.body}"
+    end
   end
 
-  def vault_today_entries
-    return [] unless defined?(VaultEntry)
-    # 新しい順（最新が上）
-    VaultEntry.where(occurred_on: Date.today).order(created_at: :desc).limit(5)
-  end
-
-  def purge_warning_count
-    return 0 unless defined?(VaultEntry)
-    VaultEntry.where("purge_on <= ?", 30.days.from_now).count
-  rescue
-    0
+  def call_openai_api(message, memory, image_url = nil)
+    # 簡易実装
+    { message: "GPT-4o APIは未実装です", metadata: { model: 'gpt-4o' } }
   end
 end
