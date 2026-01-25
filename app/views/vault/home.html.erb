@@ -1,6 +1,6 @@
 <div class="vault-page">
   <div class="vault-hero">
-    <h1>💸 送金（裏）</h1>
+    <h1>💰 Charge（裏）</h1>
     <p>外に出せない記録（へそくり/領収書）</p>
   </div>
 
@@ -10,11 +10,11 @@
 
   <div class="vault-actions">
     <%= link_to "/vault/transfer", class: "vault-action" do %>
-      💸 送金（貰い/支払い/立替）
+      💰 Charge（IN/OUT/立替）
     <% end %>
 
     <%= link_to "/vault/entries?hidden=1", class: "vault-action" do %>
-      💴 裏金メモ
+      🐷 へそくりメモ
     <% end %>
 
     <%= link_to "/vault/entries/new?kind=expense&hidden=1", class: "vault-action" do %>
@@ -22,7 +22,7 @@
     <% end %>
 
     <%= link_to "/vault/entries", class: "vault-action" do %>
-      📋 全履歴
+      📋 全履歴（新しい順）
     <% end %>
   </div>
 
@@ -39,7 +39,7 @@
     <details>
       <summary class="vault-danger-toggle">🔥 危険操作</summary>
       <div class="vault-danger-content">
-        <p>すべての送金記録を即座に削除します。この操作は取り消せません。</p>
+        <p>すべてのCharge記録を即座に削除します。この操作は取り消せません。</p>
         <%= button_to "全データを削除", "/api/vault/wipe_all",
             method: :post,
             class: "vault-danger-btn",

@@ -1,8 +1,8 @@
 class HubController < ApplicationController
-  # メイン入口は「秘書」のみ。議事録/朝/夜は裏メニュー扱い
+  # メイン入口は「秘書」と「Charge（裏）」
   MENUS = [
     { key: "secretary", label: "🤵 秘書", path: "/hub?mode=A" },
-    { key: "vault", label: "💸 送金（裏）", path: "/vault" }
+    { key: "vault", label: "💰 Charge（裏）", path: "/vault" }
   ].freeze
 
   # 表示するモードは秘書のみ、他はURL直打ち可
@@ -87,12 +87,12 @@ class HubController < ApplicationController
 
   def vault_today_entries
     return [] unless defined?(VaultEntry)
+    # 新しい順（最新が上）
     VaultEntry.where(occurred_on: Date.today).order(created_at: :desc).limit(5)
   end
 
   def purge_warning_count
     return 0 unless defined?(VaultEntry)
-    # 30日以内に自動削除されるエントリ数
     VaultEntry.where("purge_on <= ?", 30.days.from_now).count
   rescue
     0

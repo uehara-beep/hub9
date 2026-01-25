@@ -41,14 +41,10 @@
       align-items: center;
       gap: 8px;
     }
-    .header-icon {
-      font-size: 28px;
-    }
+    .header-icon { font-size: 28px; }
 
     /* Main */
-    .main {
-      padding: 16px;
-    }
+    .main { padding: 16px; }
 
     /* Menu - 2 items only */
     .menu {
@@ -108,12 +104,12 @@
       padding: 16px;
       border-radius: 16px;
       border: none;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       text-decoration: none;
       cursor: pointer;
       touch-action: manipulation;
@@ -127,6 +123,11 @@
       background: #ffebee;
       color: var(--red);
       border: 2px solid var(--red);
+    }
+    .quick-btn.neutral {
+      background: #fff3e0;
+      color: var(--hermes);
+      border: 2px solid var(--hermes);
     }
 
     /* Today */
@@ -207,7 +208,7 @@
   </header>
 
   <main class="main">
-    <!-- 2-column Menu: 秘書 / 送金（裏） -->
+    <!-- 2-column Menu: 秘書 / Charge（裏） -->
     <nav class="menu">
       <% @menus.each do |m| %>
         <a class="menu-item" href="<%= m[:path] %>">
@@ -226,27 +227,30 @@
 
     <!-- Balance -->
     <div class="balance-card">
-      <div class="balance-label">今月の裏残高</div>
+      <div class="balance-label">今月のへそくり残高</div>
       <div class="balance-amount <%= @vault_balance >= 0 ? 'positive' : 'negative' %>">
         ¥ <%= number_with_delimiter(@vault_balance.abs) %>
         <% if @vault_balance < 0 %>−<% end %>
       </div>
     </div>
 
-    <!-- Quick Actions -->
+    <!-- Quick Actions: Charge IN / OUT / 立替 -->
     <div class="quick-actions">
       <a class="quick-btn in" href="/vault/transfer?kind=in">
-        ＋ 貰い
+        ＋ IN
       </a>
       <a class="quick-btn out" href="/vault/transfer?kind=out">
-        − 支払い
+        − OUT
+      </a>
+      <a class="quick-btn neutral" href="/vault/transfer?category=立替">
+        💸 立替
       </a>
     </div>
 
-    <!-- Today -->
+    <!-- Today (新しい順) -->
     <div class="today-card">
       <div class="today-header">
-        📋 今日の記録
+        📋 今日の記録（新しい順）
       </div>
       <% if @today_entries.empty? %>
         <div class="today-empty">まだ記録がありません</div>
@@ -255,7 +259,7 @@
           <div class="today-item">
             <span><%= e.tag.presence || e.memo.to_s.truncate(20) || "—" %></span>
             <span style="color: <%= e.kind_expense? ? 'var(--red)' : 'var(--green)' %>">
-              <%= e.kind_expense? ? "−" : "＋" %>¥<%= number_with_delimiter(e.amount_yen) %>
+              <%= e.kind_expense? ? "− OUT" : "＋ IN" %> ¥<%= number_with_delimiter(e.amount_yen) %>
             </span>
           </div>
         <% end %>
@@ -270,11 +274,11 @@
     </a>
     <a class="nav-item" href="/vault/entries">
       <span class="nav-icon">🧾</span>
-      記録
+      履歴
     </a>
     <a class="nav-item" href="/vault/transfer">
-      <span class="nav-icon">💸</span>
-      送金
+      <span class="nav-icon">💰</span>
+      Charge
     </a>
     <a class="nav-item" href="/notifications">
       <span class="nav-icon">🔔</span>
