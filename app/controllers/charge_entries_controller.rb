@@ -1,26 +1,31 @@
 class ChargeEntriesController < ApplicationController
   def index
-    @entries = ChargeEntry.order(created_at: :desc).limit(200)
-  end
-
-  def new
-    @entry = ChargeEntry.new(occurred_on: Date.current)
+    @entries = ChargeEntry.order(occurred_on: :desc, created_at: :desc).limit(200)
+    @entry = ChargeEntry.new(occurred_on: Date.current, direction: :incoming)
   end
 
   def create
     @entry = ChargeEntry.new(entry_params)
     @entry.occurred_on ||= Date.current
+
+    # directionが "0"/"1" で来ても落ちないように吸収
+    raw = params.dig(:charge_entry, :direction).to_s
+    if raw.match?(/\A[01]\z/)
+      @entry.direction = (raw == "0" ? :incoming : :outgoing)
+    end
+
     if @entry.save
       redirect_to charge_entries_path, notice: "記録しました"
     else
-      flash.now[:alert] = "入力を確認してね"
-      render :new, status: 422
+      @entries = ChargeEntry.order(occurred_on: :desc, created_at: :desc).limit(200)
+      flash.now[:alert] = @entry.errors.full_messages.join(" / ")
+      render :index, status: :unprocessable_entity
     end
   end
 
   private
 
   def entry_params
-    params.require(:charge_entry).permit(:direction, :amount_yen, :category, :counterparty, :note, :occurred_on)
+    params.require(:charge_entry).permit(:direction, :amount_yen, :counterparty, :category, :note, :occurred_on)
   end
 end
