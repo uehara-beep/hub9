@@ -7,13 +7,13 @@
   <title>HUB9 - <%= @modes.find{|x| x[:key]==@mode}&.dig(:label) || "秘書" %></title>
   <style>
     :root {
-      --bg: #f6f3ef;
+      --bg: #8cabd9;
       --card: #fff;
       --text: #1a1a1a;
       --muted: #666;
       --hermes: #ff7a00;
-      --user-bg: #ff7a00;
-      --user-text: #fff;
+      --user-bg: #7adc5c;
+      --user-text: #1a1a1a;
       --ai-bg: #fff;
       --ai-text: #1a1a1a;
       --safe-top: env(safe-area-inset-top, 0px);
@@ -74,45 +74,108 @@
       flex: 1;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding: calc(70px + var(--safe-top)) 16px calc(80px + var(--safe-bottom));
+      padding: calc(70px + var(--safe-top)) 12px calc(90px + var(--safe-bottom));
       display: flex;
-      flex-direction: column-reverse; /* 新しいメッセージが上 */
-      gap: 12px;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    /* Message Bubbles */
+    /* Message Row */
+    .msg-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .msg-row.user {
+      flex-direction: row-reverse;
+    }
+
+    /* Avatar */
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .avatar.ai {
+      background: #fff;
+      color: var(--hermes);
+      border: 2px solid var(--hermes);
+    }
+    .avatar.user {
+      background: var(--hermes);
+      color: #fff;
+    }
+
+    /* Bubble Container */
+    .msg-content {
+      max-width: 75%;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .msg-row.user .msg-content {
+      align-items: flex-end;
+    }
+
+    /* Name */
+    .msg-name {
+      font-size: 12px;
+      color: rgba(255,255,255,.8);
+      padding: 0 8px;
+    }
+
+    /* Bubble */
     .bubble {
-      max-width: 85%;
-      padding: 12px 16px;
+      padding: 10px 14px;
       border-radius: 18px;
       font-size: 15px;
       line-height: 1.5;
       word-break: break-word;
+      position: relative;
     }
-    .bubble.user {
-      align-self: flex-end;
-      background: var(--user-bg);
-      color: var(--user-text);
-      border-bottom-right-radius: 4px;
-    }
-    .bubble.assistant {
-      align-self: flex-start;
+    .bubble.ai {
       background: var(--ai-bg);
       color: var(--ai-text);
-      border-bottom-left-radius: 4px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      border-top-left-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,.1);
     }
-    .bubble-role {
-      font-size: 11px;
-      opacity: .6;
-      margin-bottom: 4px;
-      text-transform: uppercase;
+    .bubble.user {
+      background: var(--user-bg);
+      color: var(--user-text);
+      border-top-right-radius: 4px;
     }
-    .bubble-text p {
+    .bubble p {
       margin: 0;
     }
-    .bubble-text p + p {
-      margin-top: 8px;
+    .bubble p + p {
+      margin-top: 6px;
+    }
+
+    /* Time */
+    .msg-time {
+      font-size: 11px;
+      color: rgba(255,255,255,.6);
+      padding: 0 8px;
+    }
+
+    /* Empty State */
+    .chat-empty {
+      text-align: center;
+      color: rgba(255,255,255,.8);
+      padding: 60px 20px;
+    }
+    .chat-empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    .chat-empty p {
+      font-size: 16px;
     }
 
     /* Fixed Input Area */
@@ -122,56 +185,105 @@
       left: 0;
       right: 0;
       z-index: 100;
-      background: rgba(255,255,255,.95);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid #eee;
-      padding: 12px 16px calc(12px + var(--safe-bottom));
+      background: #fff;
+      border-top: 1px solid #ddd;
+      padding: 10px 12px calc(10px + var(--safe-bottom));
     }
     .chat-form {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
+    }
+    .chat-attach {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: #f0f0f0;
+      color: #666;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .chat-attach:active {
+      background: #e0e0e0;
     }
     .chat-text {
       flex: 1;
-      padding: 12px 16px;
+      padding: 10px 16px;
       border: 1px solid #ddd;
-      border-radius: 24px;
+      border-radius: 20px;
       font-size: 16px;
-      background: #fff;
+      background: #f8f8f8;
       outline: none;
       -webkit-appearance: none;
     }
     .chat-text:focus {
       border-color: var(--hermes);
+      background: #fff;
     }
     .chat-send {
-      width: 48px;
-      height: 48px;
+      width: 40px;
+      height: 40px;
       border: none;
       border-radius: 50%;
       background: var(--hermes);
       color: #fff;
-      font-size: 20px;
+      font-size: 18px;
       cursor: pointer;
       touch-action: manipulation;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
     .chat-send:active {
       transform: scale(0.95);
     }
 
-    /* Empty State */
-    .chat-empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 40px 20px;
+    /* Image Preview */
+    .image-preview {
+      display: none;
+      padding: 8px 12px;
+      background: #f8f8f8;
+      border-bottom: 1px solid #eee;
     }
-    .chat-empty-icon {
-      font-size: 48px;
-      margin-bottom: 12px;
+    .image-preview.show {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .preview-thumb {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .preview-name {
+      flex: 1;
+      font-size: 13px;
+      color: #666;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .preview-remove {
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: 50%;
+      background: #ff4444;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Hidden file input */
+    .file-input {
+      display: none;
     }
   </style>
 </head>
@@ -180,23 +292,31 @@
   <header class="chat-header">
     <div class="chat-header-left">
       <a class="chat-back" href="/">←</a>
-      <span class="chat-title">🤵 <%= @modes.find{|x| x[:key]==@mode}&.dig(:label) || "秘書" %></span>
+      <span class="chat-title">🤵 秘書</span>
     </div>
     <span class="chat-badge">mode <%= @mode %></span>
   </header>
 
-  <!-- Scrollable Chat Area (newest first with flex-direction: column-reverse) -->
-  <div class="chat-messages">
+  <!-- Scrollable Chat Area -->
+  <div class="chat-messages" id="chatMessages">
     <% if @messages.empty? %>
       <div class="chat-empty">
         <div class="chat-empty-icon">🤵</div>
-        <p>メッセージを入力してください</p>
+        <p>秘書に話しかけてみてください</p>
       </div>
     <% else %>
-      <% @messages.reverse.each do |msg| %>
-        <div class="bubble <%= msg.role %>">
-          <div class="bubble-role"><%= msg.role == "user" ? "You" : "秘書" %></div>
-          <div class="bubble-text"><%= simple_format(h(msg.content)) %></div>
+      <% @messages.each do |msg| %>
+        <div class="msg-row <%= msg.role %>">
+          <div class="avatar <%= msg.role %>">
+            <%= msg.role == "user" ? "ta9" : "秘" %>
+          </div>
+          <div class="msg-content">
+            <div class="msg-name"><%= msg.role == "user" ? "ta9" : "秘書" %></div>
+            <div class="bubble <%= msg.role %>">
+              <%= simple_format(h(msg.content)) %>
+            </div>
+            <div class="msg-time"><%= msg.created_at&.strftime("%H:%M") || "" %></div>
+          </div>
         </div>
       <% end %>
     <% end %>
@@ -204,20 +324,60 @@
 
   <!-- Fixed Input Area -->
   <div class="chat-input">
-    <%= form_with url: "/hub/send", method: :post, local: true, class: "chat-form" do %>
+    <div class="image-preview" id="imagePreview">
+      <img class="preview-thumb" id="previewThumb" src="" alt="">
+      <span class="preview-name" id="previewName"></span>
+      <button type="button" class="preview-remove" id="previewRemove">×</button>
+    </div>
+    <%= form_with url: "/hub/send", method: :post, local: true, class: "chat-form", multipart: true do %>
       <input type="hidden" name="mode" value="<%= @mode %>">
+      <input type="file" name="image" accept="image/*" class="file-input" id="fileInput">
+      <button type="button" class="chat-attach" id="attachBtn">＋</button>
       <input class="chat-text" name="text" placeholder="メッセージを入力..." autocomplete="off" autofocus>
       <button class="chat-send" type="submit">➤</button>
     <% end %>
   </div>
 
   <script>
-    // Auto-scroll to top (newest) on load
+    // Auto-scroll to bottom (newest message)
     document.addEventListener('DOMContentLoaded', function() {
-      const messages = document.querySelector('.chat-messages');
+      const messages = document.getElementById('chatMessages');
       if (messages) {
-        messages.scrollTop = 0;
+        messages.scrollTop = messages.scrollHeight;
       }
+    });
+
+    // Image attachment
+    const attachBtn = document.getElementById('attachBtn');
+    const fileInput = document.getElementById('fileInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewThumb = document.getElementById('previewThumb');
+    const previewName = document.getElementById('previewName');
+    const previewRemove = document.getElementById('previewRemove');
+
+    attachBtn.addEventListener('click', function() {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        const file = this.files[0];
+        previewName.textContent = file.name;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewThumb.src = e.target.result;
+          imagePreview.classList.add('show');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    previewRemove.addEventListener('click', function() {
+      fileInput.value = '';
+      imagePreview.classList.remove('show');
+      previewThumb.src = '';
+      previewName.textContent = '';
     });
   </script>
 </body>
