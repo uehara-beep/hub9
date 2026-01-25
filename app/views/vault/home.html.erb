@@ -1,20 +1,112 @@
 <div class="vault-page">
   <div class="vault-hero">
-    <h1>🐴 Vault</h1>
+    <h1>💸 送金（裏）</h1>
     <p>外に出せない記録（へそくり/領収書）</p>
   </div>
 
+  <% if flash[:notice].present? %>
+    <div class="vault-toast"><%= flash[:notice] %></div>
+  <% end %>
+
   <div class="vault-actions">
-    <%= link_to "/vault/transfer", class: "vault-card" do %>
+    <%= link_to "/vault/transfer", class: "vault-action" do %>
       💸 送金（貰い/支払い/立替）
     <% end %>
 
-    <%= link_to "/vault/entries?hidden=1", class: "vault-card" do %>
+    <%= link_to "/vault/entries?hidden=1", class: "vault-action" do %>
       💴 裏金メモ
     <% end %>
 
-    <%= link_to "/vault/entries/new?kind=out&hidden=1", class: "vault-card" do %>
+    <%= link_to "/vault/entries/new?kind=expense&hidden=1", class: "vault-action" do %>
       🧾 領収書（写メ）
     <% end %>
+
+    <%= link_to "/vault/entries", class: "vault-action" do %>
+      📋 全履歴
+    <% end %>
+  </div>
+
+  <!-- 自動削除警告 -->
+  <% purge_soon = VaultEntry.where("purge_on <= ?", 30.days.from_now).count rescue 0 %>
+  <% if purge_soon > 0 %>
+    <div class="vault-warning">
+      ⚠️ <%= purge_soon %>件が30日以内に自動削除されます
+    </div>
+  <% end %>
+
+  <!-- 即全消しボタン -->
+  <div class="vault-danger-zone">
+    <details>
+      <summary class="vault-danger-toggle">🔥 危険操作</summary>
+      <div class="vault-danger-content">
+        <p>すべての送金記録を即座に削除します。この操作は取り消せません。</p>
+        <%= button_to "全データを削除", "/api/vault/wipe_all",
+            method: :post,
+            class: "vault-danger-btn",
+            data: { confirm: "本当にすべて削除しますか？この操作は取り消せません。", turbo_confirm: "本当にすべて削除しますか？" } %>
+      </div>
+    </details>
+  </div>
+
+  <div class="vault-back">
+    <a href="/">← HUB9 ホームへ</a>
   </div>
 </div>
+
+<style>
+.vault-warning{
+  margin: 16px;
+  padding: 12px 16px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 12px;
+  color: #856404;
+  font-size: 14px;
+  text-align: center;
+}
+.vault-danger-zone{
+  margin: 24px 16px;
+  border: 1px solid #dc3545;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.vault-danger-toggle{
+  display: block;
+  padding: 12px 16px;
+  background: #fff5f5;
+  color: #dc3545;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.vault-danger-toggle::-webkit-details-marker{ display: none; }
+.vault-danger-content{
+  padding: 16px;
+  background: #fff;
+}
+.vault-danger-content p{
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 12px;
+}
+.vault-danger-btn{
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #dc3545;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.vault-back{
+  text-align: center;
+  padding: 24px 16px 40px;
+}
+.vault-back a{
+  color: var(--muted, #666);
+  font-size: 14px;
+  text-decoration: none;
+}
+</style>
