@@ -30,8 +30,9 @@ class HubController < ApplicationController
 
   def secretary
     # 秘書画面（古い順 = 最新が下、LINEスタイル）
+    # reorderでdefault_scopeを上書き
     @messages = current_user.hyper_secretary_messages
-                            .order(:created_at)
+                            .reorder(created_at: :asc)
                             .limit(100)
   end
 
