@@ -29,9 +29,9 @@ class HubController < ApplicationController
   end
 
   def secretary
-    # 秘書画面（古い順 = 最新が下）
+    # 秘書画面（古い順 = 最新が下、LINEスタイル）
     @messages = current_user.hyper_secretary_messages
-                            .order(created_at: :asc)
+                            .order(:created_at)
                             .limit(100)
   end
 
