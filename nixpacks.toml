@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["ruby_3_3"]
+nixPkgs = ["ruby_4_0"]
 
 [variables]
-BUNDLER_VERSION = "2.5.23"
+BUNDLER_VERSION = "4.0.3"
