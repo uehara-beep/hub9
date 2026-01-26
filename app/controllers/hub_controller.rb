@@ -25,6 +25,7 @@ class HubController < ApplicationController
       { label: "💰 Charge", path: charge_entries_path }
     ]
     @today_entries = ChargeEntry.where(occurred_on: Date.current).order(created_at: :desc).limit(5)
+    render :home
   end
 
   def secretary

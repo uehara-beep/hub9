@@ -1,5 +1,1 @@
-[phases.setup]
-nixPkgs = ["ruby_4_0"]
-
-[variables]
-BUNDLER_VERSION = "4.0.3"
+# Let Dockerfile handle the build

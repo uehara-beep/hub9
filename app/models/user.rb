@@ -4,4 +4,6 @@ class User < ApplicationRecord
          :recoverable,
          :rememberable,
          :validatable
+
+  has_many :hyper_secretary_messages, dependent: :destroy
 end

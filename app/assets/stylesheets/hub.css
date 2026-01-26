@@ -97,3 +97,222 @@ body{margin:0;background:var(--bg);color:var(--text);font-family: system-ui, -ap
   .tab.is-active .tab-dot{background:var(--hermes)}
   .tab-label{font-size:12px;font-weight:700}
 }
+
+/* ===== LINE-style Chat ===== */
+.hub-content {
+  flex: 1;
+  padding: 16px;
+  padding-bottom: 180px;
+  overflow-y: auto;
+  background: #f6f1ea;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.chat-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* ユーザーメッセージは右寄せ */
+.chat-message-user {
+  flex-direction: row-reverse;
+}
+
+/* アバター */
+.chat-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #06c755;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.chat-avatar-assistant {
+  background: #ff7a00;
+}
+
+/* メッセージコンテンツ */
+.chat-message-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 70%;
+}
+
+.chat-message-user .chat-message-content {
+  align-items: flex-end;
+}
+
+/* 送信者名（非表示にしてLINEっぽく） */
+.chat-sender-name {
+  display: none;
+}
+
+/* 吹き出し */
+.chat-bubble {
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.5;
+  word-break: break-word;
+  position: relative;
+}
+
+.chat-bubble p {
+  margin: 0;
+}
+
+.chat-bubble p + p {
+  margin-top: 8px;
+}
+
+/* 秘書（左側）の吹き出し - 白 */
+.chat-bubble-assistant {
+  background: white;
+  color: #111;
+  border-radius: 4px 18px 18px 18px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* ユーザー（右側）の吹き出し - LINE緑 */
+.chat-bubble-user {
+  background: #06c755;
+  color: white;
+  border-radius: 18px 4px 18px 18px;
+}
+
+/* 時刻 */
+.chat-time {
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+}
+
+.chat-message-user .chat-time {
+  text-align: right;
+}
+
+/* 画像 */
+.chat-image {
+  max-width: 200px;
+  border-radius: 12px;
+  margin-top: 8px;
+}
+
+/* 入力エリア固定 */
+.hub-footer-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid #e5e5e5;
+  padding: 12px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+.hub-footer-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.input-toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.input-attach-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.input-field-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  background: #f0f0f0;
+  border-radius: 20px;
+  padding: 4px 4px 4px 14px;
+}
+
+.input-field-wrapper textarea {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1.4;
+  resize: none;
+  min-height: 32px;
+  max-height: 100px;
+  padding: 6px 0;
+  outline: none;
+}
+
+.input-send-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #06c755;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-send-btn:hover {
+  background: #05b34d;
+}
+
+/* 画像プレビュー */
+.image-preview-container {
+  margin-bottom: 8px;
+  position: relative;
+  display: inline-block;
+}
+
+.image-preview {
+  max-width: 120px;
+  max-height: 120px;
+  border-radius: 8px;
+}
+
+.image-preview-remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff3b30;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}

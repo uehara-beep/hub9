@@ -2,7 +2,7 @@ require "net/http"
 require "json"
 
 module HyperSecretary
-  class OpenAI
+  class OpenAi
     ENDPOINT = "https://api.openai.com/v1/chat/completions"
 
     def self.chat(system:, user:, temperature: 0.2, model: nil)

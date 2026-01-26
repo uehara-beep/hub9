@@ -10,6 +10,10 @@ class ChargeEntriesController < ApplicationController
     @entry = ChargeEntry.new(occurred_on: Date.current, direction: :incoming)
   end
 
+  def new
+    @entry = ChargeEntry.new(occurred_on: Date.current, direction: :incoming)
+  end
+
   def create
     @entry = ChargeEntry.new(entry_params)
     @entry.occurred_on ||= Date.current
