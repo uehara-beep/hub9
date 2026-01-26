@@ -1,6 +1,7 @@
 .charge-wrap{max-width:720px;margin:0 auto;padding:18px}
 .charge-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .charge-head h1{margin:0;font-size:22px}
+.back-btn{font-size:24px;font-weight:700;color:#ff7a00;text-decoration:none}
 .horse-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:#ff7a00;box-shadow:0 8px 20px rgba(0,0,0,.12);font-size:22px;user-select:none;touch-action:manipulation;color:#111;text-decoration:none}
 .horse-primary{width:100%;padding:14px;border:none;border-radius:16px;background:#ff7a00;color:#111;font-weight:800;font-size:16px;touch-action:manipulation;cursor:pointer}
 .ghost-btn{padding:10px 12px;border-radius:14px;background:#fff;box-shadow:0 8px 20px rgba(0,0,0,.08);text-decoration:none;color:#111}
