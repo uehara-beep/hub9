@@ -54,53 +54,60 @@ class ChargeEntriesController < ApplicationController
   end
 
   def parse_receipt_with_claude(image_base64)
+    require 'net/http'
+    require 'json'
+
     api_key = ENV['ANTHROPIC_API_KEY']
     raise "ANTHROPIC_API_KEY not set" unless api_key.present?
 
-    response = HTTParty.post(
-      "https://api.anthropic.com/v1/messages",
-      headers: {
-        "x-api-key" => api_key,
-        "anthropic-version" => "2023-06-01",
-        "content-type" => "application/json"
-      },
-      body: {
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1024,
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "image",
-                source: {
-                  type: "base64",
-                  media_type: "image/jpeg",
-                  data: image_base64
-                }
-              },
-              {
-                type: "text",
-                text: <<~PROMPT
-                  このレシート画像を解析して、以下の情報をJSON形式で返してください。
-                  - amount: 合計金額（数字のみ、円記号やカンマなし）
-                  - store: 店名
-                  - category: カテゴリ（"交通費", "飲食", "立替", "雑", "その他" のいずれか）
-                  - note: 主な商品名（複数あれば最初の2-3個）
+    uri = URI("https://api.anthropic.com/v1/messages")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    http.read_timeout = 30
 
-                  JSONのみを返してください。説明は不要です。
-                  例: {"amount": 1280, "store": "セブンイレブン", "category": "飲食", "note": "おにぎり、お茶"}
-                PROMPT
+    request = Net::HTTP::Post.new(uri)
+    request["x-api-key"] = api_key
+    request["anthropic-version"] = "2023-06-01"
+    request["content-type"] = "application/json"
+
+    request.body = {
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1024,
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "image",
+              source: {
+                type: "base64",
+                media_type: "image/jpeg",
+                data: image_base64
               }
-            ]
-          }
-        ]
-      }.to_json,
-      timeout: 30
-    )
+            },
+            {
+              type: "text",
+              text: <<~PROMPT
+                このレシート画像を解析して、以下の情報をJSON形式で返してください。
+                - amount: 合計金額（数字のみ、円記号やカンマなし）
+                - store: 店名
+                - category: カテゴリ（"交通費", "飲食", "立替", "雑", "その他" のいずれか）
+                - note: 主な商品名（複数あれば最初の2-3個）
 
-    if response.success?
-      content = response.dig('content', 0, 'text').to_s
+                JSONのみを返してください。説明は不要です。
+                例: {"amount": 1280, "store": "セブンイレブン", "category": "飲食", "note": "おにぎり、お茶"}
+              PROMPT
+            }
+          ]
+        }
+      ]
+    }.to_json
+
+    response = http.request(request)
+
+    if response.is_a?(Net::HTTPSuccess)
+      data = JSON.parse(response.body)
+      content = data.dig('content', 0, 'text').to_s
       # JSONを抽出（```json ... ``` で囲まれている場合も対応）
       json_match = content.match(/\{[^}]+\}/m)
       if json_match

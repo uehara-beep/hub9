@@ -115,15 +115,18 @@ class HubController < ApplicationController
   end
 
   def call_anthropic_api(message, memory, image_url = nil)
+    require 'net/http'
+    require 'json'
+
     # メッセージコンテンツを構築
     content = []
-    
+
     # 画像がある場合
     if image_url.present?
       image_path = Rails.root.join('public', image_url.gsub(/^\//, ''))
       if File.exist?(image_path)
         image_data = Base64.strict_encode64(File.read(image_path))
-        
+
         content << {
           type: "image",
           source: {
@@ -134,7 +137,7 @@ class HubController < ApplicationController
         }
       end
     end
-    
+
     # テキストメッセージ
     if message.present?
       content << {
@@ -143,30 +146,34 @@ class HubController < ApplicationController
       }
     end
 
-    api_response = HTTParty.post(
-      "https://api.anthropic.com/v1/messages",
-      headers: {
-        "x-api-key" => ENV['ANTHROPIC_API_KEY'],
-        "anthropic-version" => "2023-06-01",
-        "content-type" => "application/json"
-      },
-      body: {
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1024,
-        system: "あなたは有能な秘書です。ユーザーの指示を記憶し、適切に対応してください。",
-        messages: [
-          *memory,
-          { role: "user", content: content }
-        ]
-      }.to_json,
-      timeout: 30
-    )
+    uri = URI("https://api.anthropic.com/v1/messages")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    http.read_timeout = 30
 
-    if api_response.success?
-      content = api_response['content'][0]['text']
-      { message: content, metadata: { model: 'claude-sonnet-4.5' } }
+    request = Net::HTTP::Post.new(uri)
+    request["x-api-key"] = ENV['ANTHROPIC_API_KEY']
+    request["anthropic-version"] = "2023-06-01"
+    request["content-type"] = "application/json"
+
+    request.body = {
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1024,
+      system: "あなたは有能な秘書です。ユーザーの指示を記憶し、適切に対応してください。",
+      messages: [
+        *memory,
+        { role: "user", content: content }
+      ]
+    }.to_json
+
+    response = http.request(request)
+
+    if response.is_a?(Net::HTTPSuccess)
+      data = JSON.parse(response.body)
+      text = data.dig('content', 0, 'text')
+      { message: text, metadata: { model: 'claude-sonnet-4.5' } }
     else
-      raise "API Error: #{api_response.code} - #{api_response.body}"
+      raise "API Error: #{response.code} - #{response.body}"
     end
   end
 
