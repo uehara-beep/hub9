@@ -18,3 +18,14 @@
 .charge-wrap label{font-weight:800}
 .charge-wrap input,.charge-wrap select,.charge-wrap textarea{width:100%;padding:12px;border-radius:14px;border:1px solid rgba(0,0,0,.08);font-size:16px}
 .seg{display:flex;gap:10px;align-items:center}
+
+/* レシート読み取り */
+.receipt-upload-section{margin-bottom:16px}
+.receipt-upload-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;background:#fff3e0;border:2px dashed #ff7a00;border-radius:16px;color:#ff7a00;font-size:16px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.receipt-upload-btn:active{background:#ffe0b2}
+.receipt-status{margin-top:12px;text-align:center;font-size:14px}
+.receipt-status .scanning{color:#ff7a00}
+.receipt-status .success{color:#27ae60}
+.receipt-status .error{color:#c0392b}
+.receipt-preview{margin-top:12px;text-align:center}
+.receipt-preview-img{max-width:200px;max-height:200px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.1)}

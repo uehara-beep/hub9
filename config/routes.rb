@@ -24,7 +24,11 @@ Rails.application.routes.draw do
   get "/notifications/:id/read", to: "notifications#read", as: :read_notification
 
   # Charge entries
-  resources :charge_entries, only: [:index, :new, :create]
+  resources :charge_entries, only: [:index, :new, :create] do
+    collection do
+      post :scan_receipt
+    end
+  end
 
   # Hub Secretary
   namespace :hub do
