@@ -1,3 +1,9 @@
+# =============================================
+# Vault: PIN保護された裏記録
+# - へそくり/領収書など外に出せない記録
+# - PIN認証必須
+# - Charge/Secretaryとは独立
+# =============================================
 class VaultController < ApplicationController
   before_action :no_store
   before_action :require_vault_unlocked, except: [:index, :unlock]

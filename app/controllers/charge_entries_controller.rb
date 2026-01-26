@@ -1,3 +1,9 @@
+# =============================================
+# Charge: 直接入力で受取/支払を記録
+# - フォームから手動入力（AI不要）
+# - 受取(incoming) / 支払(outgoing)
+# - Secretaryからも自動作成される
+# =============================================
 class ChargeEntriesController < ApplicationController
   def index
     @entries = ChargeEntry.order(occurred_on: :desc, created_at: :desc).limit(200)
