@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "bundle exec puma -C config/puma.rb",
+    "startCommand": "bundle exec rails db:migrate && bundle exec puma -C config/puma.rb",
     "restartPolicyType": "ON_FAILURE"
   }
 }
