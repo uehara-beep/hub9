@@ -131,7 +131,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family: system-ui, -ap
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #06c755;
+  background: #ff7a00;
   color: white;
   display: flex;
   align-items: center;
@@ -142,7 +142,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family: system-ui, -ap
 }
 
 .chat-avatar-assistant {
-  background: #ff7a00;
+  background: #ff69b4;
 }
 
 /* メッセージコンテンツ */
@@ -187,9 +187,9 @@ body{margin:0;background:var(--bg);color:var(--text);font-family: system-ui, -ap
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* ユーザー（右側）の吹き出し - LINE緑 */
+/* ユーザー（右側）の吹き出し - オレンジ */
 .chat-bubble-user {
-  background: #06c755;
+  background: #ff7a00;
   color: white;
   border-radius: 18px 4px 18px 18px;
 }
