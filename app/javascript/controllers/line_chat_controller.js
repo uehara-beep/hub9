@@ -12,15 +12,19 @@ export default class extends Controller {
     // フォーム送信は通常通り（サーバーサイドでリダイレクト）
     const message = this.inputTarget.value.trim()
     const hasFile = this.fileInputTarget.files.length > 0
-    
+
     if (!message && !hasFile) {
       event.preventDefault()
       alert("メッセージまたは画像を入力してください")
       return
     }
-    
+
+    // 即座にUIを更新
     this.submitTarget.disabled = true
-    this.submitTarget.innerHTML = "⏳"
+    this.submitTarget.innerHTML = "..."
+    this.submitTarget.style.background = "#ccc"
+    this.inputTarget.disabled = true
+    this.inputTarget.placeholder = "送信中..."
   }
 
   handleKeydown(event) {

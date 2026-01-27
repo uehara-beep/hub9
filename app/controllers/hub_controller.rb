@@ -106,15 +106,57 @@ class HubController < ApplicationController
     # メモリコンテキストを取得
     memory = HyperSecretaryMessage.get_memory_context(current_user, limit: 10)
 
+    # システムコンテキスト（Chargeデータ）を取得
+    system_context = build_system_context
+
     case model
     when 'gpt-4o'
       call_openai_api(message, memory, image_url)
     else
-      call_anthropic_api(message, memory, image_url)
+      call_anthropic_api(message, memory, image_url, system_context)
     end
   end
 
-  def call_anthropic_api(message, memory, image_url = nil)
+  def build_system_context
+    # 最近のCharge記録を取得
+    recent_charges = ChargeEntry.order(created_at: :desc).limit(20)
+
+    # 集計
+    total_in = ChargeEntry.where(direction: :incoming).sum(:amount_yen)
+    total_out = ChargeEntry.where(direction: :outgoing).sum(:amount_yen)
+    balance = total_in - total_out
+
+    # 今日の記録
+    today_charges = ChargeEntry.where(occurred_on: Date.current)
+    today_in = today_charges.where(direction: :incoming).sum(:amount_yen)
+    today_out = today_charges.where(direction: :outgoing).sum(:amount_yen)
+
+    charge_list = recent_charges.map do |c|
+      dir = c.direction_incoming? ? "受取" : "支払"
+      "- #{c.occurred_on&.strftime('%m/%d') || '日付なし'} #{dir} ¥#{c.amount_yen.to_i} #{c.counterparty} #{c.category} #{c.note}"
+    end.join("\n")
+
+    <<~CONTEXT
+      【HUB9システム情報】
+      あなたはHUB9の秘書AIです。HUB9は個人のお金の出入り（Charge）を管理するアプリです。
+
+      【現在の残高状況】
+      - 総受取: ¥#{total_in.to_i.to_s(:delimited)}
+      - 総支払: ¥#{total_out.to_i.to_s(:delimited)}
+      - 差引残高: ¥#{balance.to_i.to_s(:delimited)}
+
+      【今日の記録】
+      - 受取: ¥#{today_in.to_i.to_s(:delimited)}
+      - 支払: ¥#{today_out.to_i.to_s(:delimited)}
+
+      【最近のCharge記録（最新20件）】
+      #{charge_list.presence || "まだ記録がありません"}
+
+      ユーザーからチャージや残高について聞かれたら、上記のデータを参照して回答してください。
+    CONTEXT
+  end
+
+  def call_anthropic_api(message, memory, image_url = nil, system_context = nil)
     require 'net/http'
     require 'json'
 
@@ -146,6 +188,9 @@ class HubController < ApplicationController
       }
     end
 
+    # システムプロンプト構築
+    system_prompt = "あなたはHUB9の秘書AIです。丁寧かつ簡潔に回答してください。\n\n#{system_context}"
+
     uri = URI("https://api.anthropic.com/v1/messages")
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
@@ -159,7 +204,7 @@ class HubController < ApplicationController
     request.body = {
       model: "claude-sonnet-4-20250514",
       max_tokens: 1024,
-      system: "あなたは有能な秘書です。ユーザーの指示を記憶し、適切に対応してください。",
+      system: system_prompt,
       messages: [
         *memory,
         { role: "user", content: content }
