@@ -141,13 +141,13 @@ class HubController < ApplicationController
       あなたはHUB9の秘書AIです。HUB9は個人のお金の出入り（Charge）を管理するアプリです。
 
       【現在の残高状況】
-      - 総受取: ¥#{total_in.to_i.to_s(:delimited)}
-      - 総支払: ¥#{total_out.to_i.to_s(:delimited)}
-      - 差引残高: ¥#{balance.to_i.to_s(:delimited)}
+      - 総受取: ¥#{ActiveSupport::NumberHelper.number_to_delimited(total_in.to_i)}
+      - 総支払: ¥#{ActiveSupport::NumberHelper.number_to_delimited(total_out.to_i)}
+      - 差引残高: ¥#{ActiveSupport::NumberHelper.number_to_delimited(balance.to_i)}
 
       【今日の記録】
-      - 受取: ¥#{today_in.to_i.to_s(:delimited)}
-      - 支払: ¥#{today_out.to_i.to_s(:delimited)}
+      - 受取: ¥#{ActiveSupport::NumberHelper.number_to_delimited(today_in.to_i)}
+      - 支払: ¥#{ActiveSupport::NumberHelper.number_to_delimited(today_out.to_i)}
 
       【最近のCharge記録（最新20件）】
       #{charge_list.presence || "まだ記録がありません"}
