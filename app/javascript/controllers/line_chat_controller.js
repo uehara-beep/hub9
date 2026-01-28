@@ -19,12 +19,12 @@ export default class extends Controller {
       return
     }
 
-    // 即座にUIを更新
+    // 即座にUIを更新（inputはdisabledにしない！送信されなくなる）
     this.submitTarget.disabled = true
     this.submitTarget.innerHTML = "..."
     this.submitTarget.style.background = "#ccc"
-    this.inputTarget.disabled = true
-    this.inputTarget.placeholder = "送信中..."
+    this.inputTarget.readOnly = true
+    this.inputTarget.style.opacity = "0.5"
   }
 
   handleKeydown(event) {
