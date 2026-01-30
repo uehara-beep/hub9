@@ -152,7 +152,7 @@ class HubController < ApplicationController
       【最近のCharge記録（最新20件）】
       #{charge_list.presence || "まだ記録がありません"}
 
-      ユーザーからチャージや残高について聞かれたら、上記のデータを参照して回答してください。
+      お金関連の質問にはこのデータを使って回答してね。
     CONTEXT
   end
 
@@ -189,7 +189,15 @@ class HubController < ApplicationController
     end
 
     # システムプロンプト構築
-    system_prompt = "あなたはHUB9の秘書AIです。丁寧かつ簡潔に回答してください。\n\n#{system_context}"
+    system_prompt = <<~PROMPT
+      あなたはta9の個人秘書です。名前は「秘書」。何でも相談に乗れる万能秘書です。
+      雑談、相談、スケジュール、タスク管理、調べもの、なんでもOK。
+      フレンドリーかつ簡潔に、友達のように話してください。敬語は最小限でOK。
+
+      また、HUB9アプリのChargeデータにアクセスできます。お金の話を聞かれたら以下を参照：
+
+      #{system_context}
+    PROMPT
 
     uri = URI("https://api.anthropic.com/v1/messages")
     http = Net::HTTP.new(uri.host, uri.port)
