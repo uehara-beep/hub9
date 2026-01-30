@@ -106,8 +106,12 @@ class HubController < ApplicationController
     # メモリコンテキストを取得
     memory = HyperSecretaryMessage.get_memory_context(current_user, limit: 10)
 
-    # システムコンテキスト（Chargeデータ）を取得
-    system_context = build_system_context
+    # Chargeデータはチャージ関連の質問の時だけ
+    system_context = if message.to_s.match?(/チャージ|charge|残高|立替|受取|支払|お金|金額/i)
+      build_system_context
+    else
+      nil
+    end
 
     case model
     when 'gpt-4o'
@@ -189,15 +193,18 @@ class HubController < ApplicationController
     end
 
     # システムプロンプト構築
-    system_prompt = <<~PROMPT
+    base_prompt = <<~PROMPT
       あなたはta9の個人秘書です。名前は「秘書」。何でも相談に乗れる万能秘書です。
       雑談、相談、スケジュール、タスク管理、調べもの、なんでもOK。
       フレンドリーかつ簡潔に、友達のように話してください。敬語は最小限でOK。
-
-      また、HUB9アプリのChargeデータにアクセスできます。お金の話を聞かれたら以下を参照：
-
-      #{system_context}
+      チャージやお金の話を聞かれない限り、金額データは出さないで。
     PROMPT
+
+    system_prompt = if system_context
+      base_prompt + "\n\n#{system_context}"
+    else
+      base_prompt
+    end
 
     uri = URI("https://api.anthropic.com/v1/messages")
     http = Net::HTTP.new(uri.host, uri.port)
