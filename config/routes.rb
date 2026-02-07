@@ -7,7 +7,8 @@ Rails.application.routes.draw do
   root "hub#index"
   get  "/hub", to: "hub#index"
   get  "/hub/secretary", to: "hub#secretary", as: :hub_secretary
-  post "/hub/send", to: "hub#send_message", as: :hub_send_message
+  post "/hub/send_stream", to: "hub#send_message_stream", as: :hub_send_message_stream
+  delete "/hub/clear_messages", to: "hub#clear_messages", as: :hub_clear_messages
 
   namespace :vault do
     resources :entries, only: [:index, :new, :create, :show, :destroy]

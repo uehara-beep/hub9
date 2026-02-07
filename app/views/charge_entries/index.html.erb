@@ -1,34 +1,56 @@
 <% content_for :head do %>
-  <%= stylesheet_link_tag "charge", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "hub", "data-turbo-track": "reload" %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <% end %>
 
-<div class="charge-wrap">
-  <div class="charge-head">
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <a href="<%= root_path %>" class="back-btn">←</a>
-      <h1>💰 Charge</h1>
+<%
+  total_in = @entries.select(&:direction_incoming?).sum(&:amount_yen).to_i
+  total_out = @entries.select(&:direction_outgoing?).sum(&:amount_yen).to_i
+%>
+
+<div class="chrg">
+  <!-- Header -->
+  <header class="chrg-hdr">
+    <%= link_to "←", root_path, class: "chrg-bk" %>
+    <h1 class="chrg-t">Charge</h1>
+    <%= link_to "+", new_charge_entry_path, class: "chrg-add shine-btn" %>
+  </header>
+
+  <!-- Summary -->
+  <div class="chrg-sum">
+    <div class="sp">
+      <div class="sp-l">Received</div>
+      <div class="sp-v in">¥<%= number_with_delimiter(total_in) %></div>
     </div>
-    <a class="horse-btn" href="<%= new_charge_entry_path %>">+</a>
+    <div class="sp">
+      <div class="sp-l">Paid</div>
+      <div class="sp-v out">¥<%= number_with_delimiter(total_out) %></div>
+    </div>
   </div>
 
-  <div class="charge-list">
-    <% @entries.each do |e| %>
-      <div class="charge-item">
-        <div class="charge-row">
-          <div class="badge <%= e.direction_incoming? ? "in" : "out" %>">
-            <%= e.direction_incoming? ? "受取" : "支払" %>
-          </div>
-          <div class="amount">¥<%= number_with_delimiter(e.amount_yen.to_i) %></div>
-        </div>
-        <div class="meta">
-          <span class="cat"><%= e.category.presence || "その他" %></span>
-          <% if e.counterparty.present? %><span class="cp">・<%= e.counterparty %></span><% end %>
-          <span class="date">・<%= (e.occurred_on || e.created_at.to_date).strftime("%m/%d") %></span>
-        </div>
-        <% if e.note.present? %>
-          <div class="note"><%= e.note %></div>
-        <% end %>
+  <!-- List -->
+  <div class="cl">
+    <% if @entries.blank? %>
+      <div class="empty-state">
+        <p>No records yet</p>
+        <p class="sub">Tap + to add your first entry</p>
       </div>
+    <% else %>
+      <% @entries.each do |e| %>
+        <div class="ci">
+          <div class="cbb <%= e.direction_incoming? ? 'cbb-r' : 'cbb-p' %>">
+            <%= e.direction_incoming? ? "IN" : "OUT" %>
+          </div>
+          <div class="cd">
+            <div class="cd-m"><%= (e.occurred_on || e.created_at.to_date).strftime("%m/%d") %> - <%= e.category.presence || "Other" %></div>
+            <div class="cd-n"><%= e.counterparty.presence || e.note.presence || "—" %></div>
+          </div>
+          <div class="ca <%= e.direction_incoming? ? 'pos' : 'neg' %>">
+            <%= e.direction_incoming? ? "+" : "−" %>¥<%= number_with_delimiter(e.amount_yen.to_i) %>
+          </div>
+        </div>
+      <% end %>
     <% end %>
   </div>
 </div>

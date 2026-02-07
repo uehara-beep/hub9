@@ -1,17 +1,24 @@
 <% content_for :head do %>
-  <%= stylesheet_link_tag "charge", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "hub", "data-turbo-track": "reload" %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <% end %>
 
-<div class="charge-wrap" data-controller="receipt">
-  <div class="charge-head">
-    <h1>💰 Charge 登録</h1>
-    <a class="ghost-btn" href="<%= charge_entries_path %>">一覧</a>
-  </div>
+<div class="chrg" data-controller="receipt">
+  <!-- Header -->
+  <header class="chrg-hdr">
+    <%= link_to "←", charge_entries_path, class: "chrg-bk" %>
+    <h1 class="chrg-t">New Entry</h1>
+  </header>
 
-  <!-- レシート読み取りボタン -->
-  <div class="receipt-upload-section">
-    <label class="receipt-upload-btn">
-      📷 レシート読み取り
+  <!-- Receipt Scan -->
+  <div style="padding: 0 20px 10px;">
+    <label class="ci" style="cursor: pointer;">
+      <div class="cbb cbb-r" style="font-size: 18px;">📷</div>
+      <div class="cd">
+        <div class="cd-n" style="color: var(--or);">Scan Receipt</div>
+        <div class="cd-m">Auto-fill from photo</div>
+      </div>
       <input type="file"
              accept="image/*"
              capture="environment"
@@ -19,31 +26,59 @@
              data-action="change->receipt#scan"
              data-receipt-target="fileInput">
     </label>
-    <div data-receipt-target="status" class="receipt-status"></div>
-    <div data-receipt-target="preview" class="receipt-preview"></div>
+    <div data-receipt-target="status" style="text-align: center; padding: 8px; color: var(--or); font-size: 12px;"></div>
+    <div data-receipt-target="preview" style="text-align: center;"></div>
   </div>
 
-  <%= form_with model: @entry, data: { receipt_target: "form" } do |f| %>
-    <div class="card">
-      <label>区分</label>
-      <div class="seg">
-        <%= f.radio_button :direction, :incoming, checked: @entry.direction_incoming? || @entry.direction.nil?, data: { receipt_target: "directionIncoming" } %><span>受取</span>
-        <%= f.radio_button :direction, :outgoing, checked: @entry.direction_outgoing?, data: { receipt_target: "directionOutgoing" } %><span>支払</span>
+  <!-- Form -->
+  <div class="form-container">
+    <%= form_with model: @entry, data: { receipt_target: "form" } do |f| %>
+
+      <div class="form-group">
+        <label class="form-label">Direction</label>
+        <div style="display: flex; gap: 10px;">
+          <label class="ci" style="flex: 1; padding: 14px; cursor: pointer;">
+            <%= f.radio_button :direction, :incoming, checked: @entry.direction_incoming? || @entry.direction.nil?, data: { receipt_target: "directionIncoming" }, style: "display: none;" %>
+            <div class="cbb cbb-r">IN</div>
+            <span style="flex: 1; color: var(--green);">Received</span>
+          </label>
+          <label class="ci" style="flex: 1; padding: 14px; cursor: pointer;">
+            <%= f.radio_button :direction, :outgoing, checked: @entry.direction_outgoing?, data: { receipt_target: "directionOutgoing" }, style: "display: none;" %>
+            <div class="cbb cbb-p">OUT</div>
+            <span style="flex: 1; color: var(--red);">Paid</span>
+          </label>
+        </div>
       </div>
 
-      <label>金額（円）</label>
-      <%= f.number_field :amount_yen, inputmode: "numeric", placeholder: "例: 12000", data: { receipt_target: "amount" } %>
+      <div class="form-group">
+        <label class="form-label">Amount (¥)</label>
+        <%= f.number_field :amount_yen, inputmode: "numeric", placeholder: "12000", class: "form-input", data: { receipt_target: "amount" } %>
+      </div>
 
-      <label>相手（任意）</label>
-      <%= f.text_field :counterparty, placeholder: "例: 田中 / 銀行 / コンビニ", data: { receipt_target: "counterparty" } %>
+      <div class="form-group">
+        <label class="form-label">Counterparty</label>
+        <%= f.text_field :counterparty, placeholder: "Company / Person", class: "form-input", data: { receipt_target: "counterparty" } %>
+      </div>
 
-      <label>カテゴリ</label>
-      <%= f.select :category, ["交通費","飲食","立替","雑","その他"], { include_blank: "選択" }, data: { receipt_target: "category" } %>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <%= f.select :category, ["交通費", "飲食", "立替", "雑", "その他"], { include_blank: "Select..." }, class: "form-input", data: { receipt_target: "category" } %>
+      </div>
 
-      <label>メモ（任意）</label>
-      <%= f.text_area :note, rows: 3, placeholder: "例: 〇〇の立替 / 返済 / チャージ", data: { receipt_target: "note" } %>
+      <div class="form-group">
+        <label class="form-label">Note</label>
+        <%= f.text_area :note, rows: 3, placeholder: "Details...", class: "form-input", data: { receipt_target: "note" } %>
+      </div>
 
-      <button class="horse-primary">記録する</button>
-    </div>
-  <% end %>
+      <button type="submit" class="form-btn shine-btn">Save Entry</button>
+    <% end %>
+  </div>
 </div>
+
+<style>
+  /* Radio button selection styling */
+  .ci:has(input[type="radio"]:checked) {
+    border-color: var(--or);
+    box-shadow: 0 0 0 2px rgba(255, 122, 0, 0.2);
+  }
+</style>

@@ -1,256 +1,73 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="csrf-token" content="<%= form_authenticity_token %>">
-  <title>HUB9</title>
-  <style>
-    :root {
-      --bg: #f6f3ef;
-      --card: #fff;
-      --text: #1a1a1a;
-      --muted: #666;
-      --hermes: #ff7a00;
-      --green: #27ae60;
-      --red: #c0392b;
-      --safe: env(safe-area-inset-bottom, 0px);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
-      min-height: 100vh;
-      padding-bottom: calc(80px + var(--safe));
-    }
+<% content_for :head do %>
+  <%= stylesheet_link_tag "hub", "data-turbo-track": "reload" %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<% end %>
 
-    /* Header */
-    .header {
-      background: var(--hermes);
-      color: #fff;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .header-title {
-      font-size: 22px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .header-icon { font-size: 28px; }
+<div class="home">
+  <!-- Animated Blob -->
+  <div class="home-blob"></div>
 
-    /* Main */
-    .main { padding: 16px; }
-
-    /* Menu - 2 items only */
-    .menu {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .menu-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 16px;
-      background: var(--card);
-      border-radius: 18px;
-      box-shadow: 0 10px 28px rgba(0,0,0,.06);
-      text-decoration: none;
-      color: var(--text);
-      font-size: 16px;
-      font-weight: 700;
-      gap: 8px;
-      touch-action: manipulation;
-    }
-    .menu-item:active { transform: scale(0.98); }
-    .menu-icon { font-size: 32px; }
-
-    /* Balance Card */
-    .balance-card {
-      background: var(--card);
-      border-radius: 18px;
-      box-shadow: 0 10px 28px rgba(0,0,0,.06);
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-    .balance-label {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-    .balance-amount {
-      font-size: 32px;
-      font-weight: 800;
-      color: var(--hermes);
-    }
-    .balance-amount.negative { color: var(--red); }
-    .balance-amount.positive { color: var(--green); }
-
-    /* Quick Actions */
-    .quick-actions {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .quick-btn {
-      flex: 1;
-      padding: 16px;
-      border-radius: 16px;
-      border: none;
-      font-size: 16px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      text-decoration: none;
-      cursor: pointer;
-      touch-action: manipulation;
-    }
-    .quick-btn.in {
-      background: #e8f5e9;
-      color: var(--green);
-      border: 2px solid var(--green);
-    }
-    .quick-btn.out {
-      background: #ffebee;
-      color: var(--red);
-      border: 2px solid var(--red);
-    }
-    .quick-btn.neutral {
-      background: #fff3e0;
-      color: var(--hermes);
-      border: 2px solid var(--hermes);
-    }
-
-    /* Today */
-    .today-card {
-      background: var(--card);
-      border-radius: 18px;
-      box-shadow: 0 10px 28px rgba(0,0,0,.06);
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    .today-header {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .today-empty {
-      color: var(--muted);
-      font-size: 14px;
-      text-align: center;
-      padding: 16px 0;
-    }
-    .today-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-      font-size: 14px;
-    }
-    .today-item:last-child { border-bottom: none; }
-
-    /* Warning Badge */
-    .purge-warning {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 12px;
-      padding: 10px 14px;
-      margin-bottom: 16px;
-      font-size: 13px;
-      color: #856404;
-      text-align: center;
-    }
-
-    /* Bottom Nav */
-    .bottom-nav {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(255,255,255,.95);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid #eee;
-      padding: 8px 16px calc(8px + var(--safe));
-      display: flex;
-      justify-content: space-around;
-    }
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-decoration: none;
-      color: var(--muted);
-      font-size: 10px;
-      padding: 4px 12px;
-    }
-    .nav-item.active { color: var(--hermes); }
-    .nav-icon { font-size: 24px; margin-bottom: 2px; }
-  </style>
-</head>
-<body>
-  <header class="header">
-    <div class="header-title">
-      <span class="header-icon">🐴</span>
-      HUB9
-    </div>
+  <!-- Header -->
+  <header class="hm-hdr">
+    <div class="hm-logo">H9</div>
+    <div class="hm-av">ta9</div>
   </header>
 
-  <main class="main">
-    <!-- 2-column Menu: 秘書 / Charge（裏） -->
-    <nav class="menu">
-      <% @menus.each do |m| %>
-        <a class="menu-item" href="<%= m[:path] %>">
-          <span class="menu-icon"><%= m[:label].match(/^\p{Emoji}+/u)&.[](0) || "📌" %></span>
-          <%= m[:label].gsub(/^\p{Emoji}+\s*/u, "") %>
-        </a>
-      <% end %>
-    </nav>
+  <!-- Greeting -->
+  <div class="hm-greet">
+    <strong><%= Time.current.hour < 12 ? "Good morning" : Time.current.hour < 18 ? "Good afternoon" : "Good evening" %></strong>, ta9
+  </div>
 
-    <!-- Today's Charge (新しい順) -->
-    <div class="today-card">
-      <div class="today-header">
-        📋 今日のCharge
-      </div>
-      <% if @today_entries.blank? %>
-        <div class="today-empty">まだ記録がありません</div>
-      <% else %>
+  <!-- Menu Grid -->
+  <nav class="hm-grid">
+    <!-- Mia (Secretary) -->
+    <a class="mc" href="<%= hub_secretary_path %>">
+      <div class="mc-ico mc-ico-mia">Mia</div>
+      <div class="mc-nm">Mia</div>
+      <div class="mc-sub">AI Secretary</div>
+    </a>
+
+    <!-- Charge -->
+    <a class="mc" href="<%= charge_entries_path %>">
+      <div class="mc-ico mc-ico-charge">$</div>
+      <div class="mc-nm">Charge</div>
+      <div class="mc-sub">Expense Tracking</div>
+    </a>
+
+    <!-- Coming Soon slots -->
+    <a class="mc" href="#">
+      <div class="mc-ico mc-ico-coming">?</div>
+      <div class="mc-nm">Coming Soon</div>
+      <div class="mc-sub">New feature</div>
+    </a>
+
+    <a class="mc" href="#">
+      <div class="mc-ico mc-ico-coming">?</div>
+      <div class="mc-nm">Coming Soon</div>
+      <div class="mc-sub">New feature</div>
+    </a>
+  </nav>
+
+  <!-- Today's Card -->
+  <div class="td-card">
+    <div class="td-hdr">
+      <span class="td-t">Today's Charge</span>
+      <span class="td-date"><%= Date.current.strftime('%m/%d') %></span>
+    </div>
+    <% if @today_entries.blank? %>
+      <div class="td-empty">No records yet</div>
+    <% else %>
+      <div class="td-list">
         <% @today_entries.each do |e| %>
-          <div class="today-item">
-            <span><%= e.counterparty.presence || e.category.presence || "—" %></span>
-            <span style="color: <%= e.direction_outgoing? ? 'var(--red)' : 'var(--green)' %>">
-              <%= e.direction_outgoing? ? "− 支払" : "＋ 受取" %> ¥<%= number_with_delimiter(e.amount_yen.to_i) %>
+          <div class="td-item">
+            <span class="td-item-info"><%= e.counterparty.presence || e.category.presence || "—" %></span>
+            <span class="td-item-amount <%= e.direction_outgoing? ? 'neg' : 'pos' %>">
+              <%= e.direction_outgoing? ? "−" : "+" %> ¥<%= number_with_delimiter(e.amount_yen.to_i) %>
             </span>
           </div>
         <% end %>
-      <% end %>
-    </div>
-  </main>
-
-  <nav class="bottom-nav">
-    <a class="nav-item active" href="/">
-      <span class="nav-icon">🏠</span>
-      Home
-    </a>
-    <a class="nav-item" href="<%= hub_secretary_path %>">
-      <span class="nav-icon">🤵</span>
-      秘書
-    </a>
-    <a class="nav-item" href="<%= charge_entries_path %>">
-      <span class="nav-icon">💰</span>
-      Charge
-    </a>
-  </nav>
-</body>
-</html>
+      </div>
+    <% end %>
+  </div>
+</div>
